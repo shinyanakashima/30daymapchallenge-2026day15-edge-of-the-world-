@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Your town, the edge of the world</title>
+<meta name="description" content="A stereographic world map centred on the antipode of a place you choose. The chosen place is stretched to infinity and becomes the outer edge of the world. #30DayMapChallenge 2026 Day 15: Inside out.">
+<meta property="og:title" content="Your town, the edge of the world">
+<meta property="og:description" content="#30DayMapChallenge 2026 Day 15 — Inside out. Pick a place; it becomes the edge of the world.">
+<meta property="og:image" content="docs/screenshot.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%23dfe7ea' stroke='%23c2412d' stroke-width='4'/%3E%3Ccircle cx='16' cy='16' r='3' fill='%2323313a'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="map" aria-label="Stereographic world map" role="img"></canvas>
+
+<header class="panel top">
+  <div class="title-row">
+    <div>
+      <p class="kicker" data-i18n="kicker">#30DayMapChallenge 2026 · Day 15 · Inside out</p>
+      <h1 data-i18n="title">Your town, the edge of the world</h1>
+    </div>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-lang="en" aria-pressed="true">EN</button>
+      <button type="button" data-lang="ja" aria-pressed="false">日本語</button>
+    </div>
+  </div>
+
+  <div class="search">
+    <label for="q" class="sr-only" data-i18n="searchLabel">Search for a town</label>
+    <input id="q" type="search" autocomplete="off" spellcheck="false"
+           role="combobox" aria-expanded="false" aria-controls="results" aria-autocomplete="list"
+           data-i18n-placeholder="searchPlaceholder" placeholder="Search a town (e.g. Obihiro, New York)">
+    <ul id="results" role="listbox" hidden></ul>
+  </div>
+
+  <div class="buttons">
+    <button type="button" id="geo" data-i18n="useLocation">Use my location</button>
+    <button type="button" id="circles" aria-pressed="false" data-i18n="circles">Equal circles</button>
+    <button type="button" id="share" data-i18n="share">Share</button>
+    <span class="zoom">
+      <button type="button" id="zoomOut" aria-label="Zoom out">−</button>
+      <button type="button" id="zoomIn" aria-label="Zoom in">+</button>
+    </span>
+  </div>
+  <p class="hint" data-i18n="hint">Click the map to choose a place. Drag to move the centre. Scroll or pinch to zoom.</p>
+  <p class="status" id="status" role="status" aria-live="polite"></p>
+</header>
+
+<aside class="panel info" id="info">
+  <button type="button" class="info-toggle" id="infoToggle" aria-expanded="true" aria-controls="infoBody" data-i18n="details">Details</button>
+  <div id="infoBody">
+    <dl class="facts">
+      <dt data-i18n="selected">Selected place (the edge)</dt>
+      <dd><strong id="selName">—</strong><br><span id="selCoord" class="mono">—</span></dd>
+      <dt data-i18n="centre">Map centre (antipode)</dt>
+      <dd><span id="ctrCoord" class="mono">—</span><br><span id="ctrKind">—</span></dd>
+    </dl>
+    <table class="stretch">
+      <caption data-i18n="stretchCaption">Stretch at each city (relative to the centre)</caption>
+      <thead><tr><th scope="col" data-i18n="city">City</th><th scope="col" data-i18n="distance">From centre</th><th scope="col" data-i18n="length">Length</th><th scope="col" data-i18n="area">Area</th></tr></thead>
+      <tbody id="stretchBody"></tbody>
+    </table>
+    <p class="formula" data-i18n-html="formula">Length ×&nbsp;2&nbsp;/&nbsp;(1&nbsp;+&nbsp;cos&nbsp;<i>c</i>), area × its square. <i>c</i> = angular distance from the centre.</p>
+    <p class="legend" id="circleLegend" hidden data-i18n="circleLegend">Every circle has the same 500&nbsp;km radius on the ground.</p>
+  </div>
+</aside>
+
+<details class="panel about" id="about">
+  <summary data-i18n="about">About this map</summary>
+  <div class="about-body">
+    <h2 data-i18n="aboutH1">What is wrong with this map</h2>
+    <p data-i18n="aboutP1">This is a stereographic projection. It keeps angles correct, so small shapes look right, but sizes grow the farther you go from the centre.</p>
+    <p data-i18n="aboutP2">On a Mercator map, things get bigger the farther they are from the equator. On this map, things get bigger the farther they are from the centre.</p>
+    <p data-i18n="aboutP3">The centre here is the antipode of the place you chose — the point on the exact opposite side of the Earth. The antipode of the centre would be stretched to infinite size, so the place you chose cannot be drawn as a point. It wraps around the whole map as its outer edge.</p>
+    <h2 data-i18n="notesH">Notes</h2>
+    <ul>
+      <li data-i18n="note1">The map is cut at 178.5° from the centre. The small area within 1.5° (about 170 km) of the chosen place cannot be drawn; the outer circle stands for it.</li>
+      <li data-i18n="note2">Your location is used only inside your browser. It is not sent anywhere and not saved. It is added to a link only if you press Share and confirm.</li>
+      <li data-i18n-html="note3">Data: <a href="https://www.naturalearthdata.com/">Natural Earth</a> (public domain): Admin 0 countries 1:110m and 1:50m (via <a href="https://github.com/topojson/world-atlas">world-atlas</a>), Populated Places 1:10m.</li>
+    </ul>
+  </div>
+</details>
+
+<p class="credit" data-i18n-html="credit">Data: <a href="https://www.naturalearthdata.com/">Natural Earth</a></p>
+
+<script src="vendor/d3.min.js"></script>
+<script src="vendor/topojson-client.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
