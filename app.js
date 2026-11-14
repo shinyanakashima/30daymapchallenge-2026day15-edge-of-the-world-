@@ -48,7 +48,9 @@
       flipInside: "Inside out",
       flipLabel: "Turn the map inside out",
       play: "Play",
-      hint: "Click the map: that point becomes your town. Scroll or pinch to zoom. Play shows the turn again.",
+      hint: "Drag to move, scroll or pinch to zoom. Click a point to make it your town. Play shows the turn again.",
+      pickBtn: "Make this your town",
+      close: "Close",
       details: "Details",
       centreLabel: "Centre of the inside-out map",
       stretchCaption: "Stretch on the inside-out map (relative to the centre)",
@@ -101,7 +103,9 @@
       flipInside: "裏返し",
       flipLabel: "地図を裏返す",
       play: "再生",
-      hint: "地図をクリックすると、その地点があなたの町になります。スクロールやピンチで拡大縮小。「再生」で裏返す様子をもう一度見られます。",
+      hint: "ドラッグで移動、スクロールやピンチで拡大縮小。地点をクリックすると、そこをあなたの町にできます。「再生」で裏返す様子をもう一度見られます。",
+      pickBtn: "ここをあなたの町にする",
+      close: "閉じる",
       details: "詳細",
       centreLabel: "裏返した地図の中心",
       stretchCaption: "裏返した地図での伸び率（中心を1とする）",
@@ -162,12 +166,14 @@
     t: 0, // 0 = ordinary map centred on your town, 1 = inside out (centred on the opposite side)
     centre: [DEFAULT.lon, DEFAULT.lat], // [lon, lat], derived from sel and t
     k: 1, // zoom set by the viewer, on top of the automatic zoom
+    tx: 0, ty: 0, // pan set by the viewer (d3.zoom transform)
     showCircles: false,
     myLoc: null, // [lon, lat], kept in memory only
   };
   let world110 = null, world50 = null; // { land, borders, countries }
   let places = null, searchIndex = null, countryLabels = null;
   let width = 0, height = 0, dpr = 1, cx = 0, cy = 0, baseScale = 1;
+  let ox = 0, oy = 0; // where the map centre is on screen (after the viewer's pan and zoom)
   let anim = null, playTimer = 0;
 
   const projection = d3.geoStereographic().clipAngle(CLIP).precision(0.4);
@@ -322,11 +328,15 @@
 
   function scaleNow() { return baseScale * autoK(state.t) * state.k; }
 
+  // The viewer's pan and zoom follow d3.zoom's model (screen = k · p + [x, y]), with
+  // the map laid out around (cx, cy) at k = 1, so wheel zoom stays under the pointer.
   function updateProjection() {
+    ox = state.k * cx + state.tx;
+    oy = state.k * cy + state.ty;
     projection
       .rotate([-state.centre[0], -state.centre[1]])
       .scale(scaleNow())
-      .translate([cx, cy]);
+      .translate([ox, oy]);
   }
 
   // ---------- drawing ----------
@@ -413,26 +423,26 @@
     const rEdge = edgeRadius(), r = rEdge * shareNumbers().rel;
     if (r > Math.hypot(width, height)) return;
     ctx.beginPath();
-    ctx.arc(cx, cy, rEdge, 0, 2 * Math.PI);
-    ctx.arc(cx, cy, r, 0, 2 * Math.PI, true);
+    ctx.arc(ox, oy, rEdge, 0, 2 * Math.PI);
+    ctx.arc(ox, oy, r, 0, 2 * Math.PI, true);
     ctx.fillStyle = hatch(); ctx.fill();
-    ctx.beginPath(); ctx.arc(cx, cy, r, 0, 2 * Math.PI);
+    ctx.beginPath(); ctx.arc(ox, oy, r, 0, 2 * Math.PI);
     ctx.lineWidth = 1.5; ctx.strokeStyle = "rgba(194, 65, 45, 0.8)"; ctx.stroke();
   }
 
   function drawShareCaption() {
     if (!insideOut()) return;
     const rEdge = edgeRadius(), n = shareNumbers(), r = rEdge * n.rel;
-    const y = cy + (r + rEdge) / 2;
+    const y = oy + (r + rEdge) / 2;
     if (width < 760 || r > Math.hypot(width, height) || y > height - 10) return; // phones: shown in the panel
     const fs = 14;
     const [l1, l2] = t("shareCaption")(shortName(), Math.round(n.map * 100), (n.earth * 100).toFixed(2));
     ctx.textAlign = "center"; ctx.textBaseline = "middle";
     ctx.font = `700 ${fs}px system-ui, -apple-system, 'Segoe UI', 'Hiragino Sans', sans-serif`;
     ctx.lineWidth = 4; ctx.strokeStyle = "rgba(250,248,243,0.92)";
-    ctx.strokeText(l1, cx, y - fs * 0.7); ctx.fillStyle = COLORS.edge; ctx.fillText(l1, cx, y - fs * 0.7);
+    ctx.strokeText(l1, ox, y - fs * 0.7); ctx.fillStyle = COLORS.edge; ctx.fillText(l1, ox, y - fs * 0.7);
     ctx.font = `${fs - 1}px system-ui, -apple-system, 'Segoe UI', 'Hiragino Sans', sans-serif`;
-    ctx.strokeText(l2, cx, y + fs * 0.7); ctx.fillStyle = "#3a2a26"; ctx.fillText(l2, cx, y + fs * 0.7);
+    ctx.strokeText(l2, ox, y + fs * 0.7); ctx.fillStyle = "#3a2a26"; ctx.fillText(l2, ox, y + fs * 0.7);
     ctx.textAlign = "start";
   }
 
@@ -459,16 +469,16 @@
       if (r > diag || r < 28 || last - r < 26) continue;
       last = r;
       ctx.strokeStyle = "rgba(35, 49, 58, 0.45)";
-      ctx.beginPath(); ctx.arc(cx, cy, r, 0, 2 * Math.PI); ctx.stroke();
+      ctx.beginPath(); ctx.arc(ox, oy, r, 0, 2 * Math.PI); ctx.stroke();
       const d = `${km.toLocaleString("en-US")} km`;
       const label = first ? (lang === "ja" ? `${name}から ${d}` : `${d} from ${name}`) : d;
       first = false;
-      const y = cy + r - 2;
+      const y = oy + r - 2;
       ctx.lineWidth = 3; ctx.strokeStyle = "rgba(202, 217, 222, 0.9)"; ctx.setLineDash([]);
-      ctx.strokeText(label, cx, y);
-      ctx.fillStyle = "rgba(35, 49, 58, 0.9)"; ctx.fillText(label, cx, y);
+      ctx.strokeText(label, ox, y);
+      ctx.fillStyle = "rgba(35, 49, 58, 0.9)"; ctx.fillText(label, ox, y);
       const lw = ctx.measureText(label).width / 2 + 4;
-      boxes.push([cx - lw, y - 15, cx + lw, y + 2]);
+      boxes.push([ox - lw, y - 15, ox + lw, y + 2]);
       ctx.setLineDash([4, 4]); ctx.lineWidth = 1;
     }
     ctx.restore();
@@ -577,7 +587,7 @@
     if (r > diag * 3) return; // edge far off screen
     const alpha = clamp01((state.t - 0.8) / 0.19);
     ctx.save();
-    ctx.beginPath(); ctx.arc(cx, cy, r, 0, 2 * Math.PI);
+    ctx.beginPath(); ctx.arc(ox, oy, r, 0, 2 * Math.PI);
     ctx.lineWidth = 3; ctx.strokeStyle = COLORS.edge; ctx.globalAlpha = 0.25 + 0.75 * alpha; ctx.stroke();
     if (alpha <= 0) { ctx.restore(); return; }
     ctx.globalAlpha = alpha;
@@ -601,7 +611,7 @@
       for (let j = 0; j < chars.length; j++) {
         const w = widths[j] * stretch;
         const mid = a + (w / 2) / tr;
-        const x = cx + tr * Math.cos(mid), y = cy + tr * Math.sin(mid);
+        const x = ox + tr * Math.cos(mid), y = oy + tr * Math.sin(mid);
         if (x > -20 && y > -20 && x < width + 20 && y < height + 20) {
           ctx.save();
           ctx.translate(x, y);
@@ -670,6 +680,7 @@
   // only turns to the new town. (Play shows the ordinary-to-inside-out turn again.)
   function select(sel, { updateUrl = true } = {}) {
     stopPlay();
+    hidePick();
     const from = state.centre.slice();
     state.sel = sel;
     const to = centreFor(sel, state.t);
@@ -822,25 +833,50 @@
   // Zoom only (wheel, pinch, buttons), always about the map centre. The map is not
   // dragged: what sits at the centre is decided by your town and the slider.
   const canvasSel = d3.select(canvas);
+  // Drag pans, wheel / pinch zooms. Neither changes your town.
   const zoom = d3.zoom()
     .scaleExtent([0.2, 600])
-    .filter((e) => e.type === "wheel" || (e.type === "touchstart" && e.touches && e.touches.length > 1) || e.type === "touchmove")
+    .clickDistance(5)
+    .on("start", (e) => {
+      if (e.sourceEvent) hidePick();
+      if (e.sourceEvent && e.sourceEvent.type !== "wheel") canvas.classList.add("dragging");
+    })
     .on("zoom", (e) => {
       state.k = e.transform.k;
+      state.tx = e.transform.x;
+      state.ty = e.transform.y;
       requestRender(true);
-    });
+    })
+    .on("end", () => canvas.classList.remove("dragging"));
   canvasSel.call(zoom).on("dblclick.zoom", null);
 
+  // A click only offers to make that point your town; nothing changes until the
+  // button in the bubble is pressed.
+  const pick = $("pick");
+  let pickPoint = null;
+  function hidePick() { pick.hidden = true; pickPoint = null; }
   canvas.addEventListener("click", (e) => {
     const rect = canvas.getBoundingClientRect();
     const pt = [e.clientX - rect.left, e.clientY - rect.top];
     updateProjection();
     const ll = projection.invert(pt);
-    if (!ll || !isFinite(ll[0]) || !isFinite(ll[1])) return;
-    if (d3.geoDistance(ll, state.centre) > CLIP * RAD) return; // beyond the edge
-    setStatus("");
-    select(selFromPoint(ll[0], ll[1], "click"));
+    if (!ll || !isFinite(ll[0]) || !isFinite(ll[1]) || d3.geoDistance(ll, state.centre) > CLIP * RAD) { hidePick(); return; }
+    pickPoint = selFromPoint(ll[0], ll[1], "click");
+    $("pickWhere").textContent = `${pickPoint.name ? displayName(pickPoint) + " · " : ""}${fmtCoord(pickPoint.lat, pickPoint.lon)}`;
+    pick.hidden = false;
+    const w = pick.offsetWidth, h = pick.offsetHeight;
+    pick.style.left = `${Math.max(8, Math.min(width - w - 8, pt[0] - w / 2))}px`;
+    pick.style.top = `${pt[1] - h - 12 < 8 ? pt[1] + 14 : pt[1] - h - 12}px`;
   });
+  $("pickBtn").addEventListener("click", () => {
+    if (!pickPoint) return;
+    const sel = pickPoint;
+    hidePick();
+    setStatus("");
+    select(sel);
+  });
+  $("pickClose").addEventListener("click", hidePick);
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") hidePick(); });
 
   els.zoomIn.addEventListener("click", () => canvasSel.transition().duration(reduceMotion.matches ? 0 : 250).call(zoom.scaleBy, 2));
   els.zoomOut.addEventListener("click", () => canvasSel.transition().duration(reduceMotion.matches ? 0 : 250).call(zoom.scaleBy, 0.5));

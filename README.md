@@ -16,11 +16,11 @@ The page is in English and can be switched to Japanese (日本語).
 ## How to use
 
 - **Your town** is shown at the top of the panel. Change it by searching a town by its English name. Major cities, and towns in Japan, can also be found by their Japanese name (e.g. 帯広).
-- **Click** the map: that point becomes your town.
+- **Click** a point on the map to open a small bubble; **Make this your town** changes your town to that point. Clicking alone changes nothing.
 - **Use where I am** makes your current position (from the browser) your town. A blue marker for it stays on the map when you choose other towns, until the page is reloaded.
 - Choosing another town keeps the current slider position and zoom; the map just turns to the new town. When the page opens it shows the turn from an ordinary map to the inside-out map once. With reduced motion turned on in the device settings, it goes straight to the inside-out map.
 - **Normal ↔ Inside out** slider: turn the map by hand. **Play** runs the turn again.
-- **Scroll / pinch** or **− / +** to zoom.
+- **Drag** to move the map, **scroll / pinch** or **− / +** to zoom. Neither changes your town.
 - **Equal circles** shows circles that all have a 500 km radius on the ground, placed at increasing distance from the centre (the same idea as Tissot's indicatrix).
 - The address bar holds your town as `?lat=&lon=&name=`, so the page can be bookmarked or linked. A town that came from your location is not written there.
 - The red hatched band is everything within 500 km of your town. On the inside-out map it covers 89% of the map, but only 0.15% of the Earth's surface.

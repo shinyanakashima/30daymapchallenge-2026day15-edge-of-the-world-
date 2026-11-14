@@ -109,6 +109,12 @@ a { color: #1d5f8a; }
 
 .stretch tr.me td { color: #1f6fb2; font-weight: 600; }
 
+.pick { position: fixed; z-index: 6; background: var(--panel); border-radius: var(--radius); box-shadow: 0 2px 10px rgba(0,0,0,.3); padding: 8px 10px; font-size: 12px; max-width: 260px; }
+.pick p { margin: 0 0 6px; color: var(--muted); }
+.pick-row { display: flex; gap: 6px; }
+#pickBtn { border-color: var(--accent); color: var(--accent); font-weight: 600; }
+#pickClose { width: 30px; padding: 0; }
+
 .credit { position: fixed; right: 12px; bottom: 8px; margin: 0; font-size: 11px; color: #b9c3c7; z-index: 1; }
 .credit a { color: #d6dee1; }
 
