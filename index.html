@@ -26,12 +26,11 @@
     </div>
   </div>
 
-  <p class="lede" id="lede">Your town goes all the way around the outside. The other side of the Earth is in the middle.</p>
+  <p class="lede" data-i18n="lede">Slide to turn the map inside out. Your town ends up all the way around the outside of the world.</p>
 
   <div class="town">
     <span class="town-label" data-i18n="yourTown">Your town</span>
     <strong id="townName">Obihiro</strong>
-    <button type="button" id="realign" hidden data-i18n="realign">Put back on the edge</button>
   </div>
 
   <div class="search">
@@ -46,34 +45,26 @@
     <button type="button" id="geo" data-i18n="useLocation">Use my location</button>
     <button type="button" id="circles" aria-pressed="false" data-i18n="circles">Equal circles</button>
     <button type="button" id="share" data-i18n="share">Share</button>
-    <span class="view" role="group" aria-label="View" id="viewGroup">
-      <button type="button" id="viewEdge" aria-pressed="true" data-i18n="viewEdge">Whole map</button>
-      <button type="button" id="viewCentre" aria-pressed="false" data-i18n="viewCentre">Around the centre</button>
-    </span>
     <span class="zoom">
       <button type="button" id="zoomOut" aria-label="Zoom out">−</button>
       <button type="button" id="zoomIn" aria-label="Zoom in">+</button>
     </span>
+  </div>
+  <div class="flip">
+    <span class="flip-end" data-i18n="flipNormal" aria-hidden="true">Normal</span>
+    <input type="range" id="flip" min="0" max="1000" step="1" value="0" data-i18n-aria="flipLabel" aria-label="Turn inside out">
+    <span class="flip-end" data-i18n="flipInside" aria-hidden="true">Inside out</span>
+    <button type="button" id="play" data-i18n="play">Play</button>
   </div>
   <p class="hint" data-i18n="hint">Click the map to choose a place. Drag to move the centre. Scroll or pinch to zoom.</p>
   <p class="status" id="status" role="status" aria-live="polite"></p>
 </header>
 
 <aside class="panel info" id="info">
-  <div class="link">
-    <canvas id="globe" aria-hidden="true"></canvas>
-    <dl class="facts">
-      <div class="end sel">
-        <dt>Selected place (the edge)</dt>
-        <dd><strong id="selName">—</strong> <span id="selCoord" class="mono">—</span></dd>
-      </div>
-      <p class="through" data-i18n="through">12,742 km straight through the Earth</p>
-      <div class="end ctr">
-        <dt>Map centre (the other side of your town)</dt>
-        <dd><span id="ctrCoord" class="mono">—</span> <span id="ctrKind">—</span></dd>
-      </div>
-    </dl>
-  </div>
+  <dl class="facts">
+    <div><dt data-i18n="yourTown">Your town</dt><dd><strong id="selName">—</strong> <span id="selCoord" class="mono">—</span></dd></div>
+    <div><dt data-i18n="centreLabel">Centre of the inside-out map</dt><dd><span id="ctrCoord" class="mono">—</span> <span id="ctrKind">—</span></dd></div>
+  </dl>
   <p class="share-note" id="shareNote"></p>
   <div class="mobile-row">
     <button type="button" class="info-toggle" id="infoToggle" aria-expanded="true" aria-controls="infoBody" data-i18n="details">Details</button>

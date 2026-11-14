@@ -7,33 +7,33 @@
 
 ![Obihiro selected: the map is centred on its antipode in the South Atlantic, and Obihiro wraps around the outer edge](docs/screenshot.png)
 
-Pick your town. It goes all the way around the outside of the map, and the other side of the Earth (the antipode) is in the middle. The map uses the stereographic projection centred on the antipode, so your town is stretched to infinite size and becomes the outer edge of the world.
+Pick your town. At first it sits in the middle of an ordinary-looking map. Move the slider (or press **Play**) and the map turns inside out: the centre travels to the other side of the Earth, your town is pushed outward and stretched until it wraps around the whole map as its outer edge, and the rest of the world is squeezed into the middle.
 
-The map opens with Obihiro, Hokkaido (42.92°N, 143.20°E) selected. Its antipode, 42.92°S, 36.80°W, is in the South Atlantic Ocean, east of Argentina. Most of the world sits in a small area in the middle; Hokkaido and the sea around it fill the outer half of the disc.
+The map opens with Obihiro, Hokkaido (42.92°N, 143.20°E) and plays the turn once. When it is inside out, the centre is 42.92°S, 36.80°W in the South Atlantic Ocean, and Hokkaido and the sea around it fill most of the disc.
 
 The page is in English and can be switched to Japanese (日本語).
 
 ## How to use
 
 - **Your town** is shown at the top of the panel. Change it by searching a town by its English name. Major cities, and towns in Japan, can also be found by their Japanese name (e.g. 帯広).
-- **Click** the map: that point becomes your town. The centre turns smoothly to the new antipode (switched instantly when the device asks for reduced motion).
-- After a place is chosen, the map turns with the whole disc in view, zooms in on the area around the centre to show where it is, and then returns to the whole map. **Whole map / Around the centre** switch between the two views.
-- The red hatched band is everything within 500 km of your town. It covers 89% of the map, but only 0.15% of the Earth's surface.
-- **Drag** to move the map. Your town stays the same: the marker for its other side moves with the map, your town appears as a red dot, and the edge turns grey because it is now another place. **Put back on the edge** turns the map back. **Scroll / pinch** to zoom.
-- Country names appear where the map is enlarged enough to fit them.
-- **Use where I am** makes your current position (from the browser) your town. A blue marker for it stays on the map when you choose other places, until the page is reloaded.
+- **Click** the map: that point becomes your town.
+- **Use where I am** makes your current position (from the browser) your town. A blue marker for it stays on the map when you choose other towns, until the page is reloaded.
+- After a town is chosen, the map shows it as an ordinary map for a moment and then turns inside out. With reduced motion turned on in the device settings, it goes straight to the inside-out map.
+- **Normal ↔ Inside out** slider: turn the map by hand. **Play** runs the turn again.
+- **Scroll / pinch** or **− / +** to zoom.
 - **Equal circles** shows circles that all have a 500 km radius on the ground, placed at increasing distance from the centre (the same idea as Tissot's indicatrix).
-- **Share** copies a link of the form `?lat=&lon=&name=`. If the place came from your location, you are asked to confirm first.
+- **Share** copies a link of the form `?lat=&lon=&name=`. If your town came from your location, you are asked to confirm first.
+- The red hatched band is everything within 500 km of your town. On the inside-out map it covers 89% of the map, but only 0.15% of the Earth's surface.
+- Country names appear where the map is enlarged enough to fit them.
 
-The small globe in the corner panel shows the Earth from the side, with your town at the top and the map centre at the bottom, joined by a red line through the Earth's centre (12,742 km). The globe turns around that line. The map centre is marked with the same white-and-red dot on the main map.
-
-The corner panel also shows your town, the map centre (the antipode) and whether it is on land or sea, and how much a set of major cities is enlarged.
+The panel also shows the centre of the inside-out map and whether it is on land or sea, and how much a set of major cities is enlarged on the inside-out map.
 
 ## The projection
 
 - Stereographic projection (`d3.geoStereographic`). It is conformal: angles are kept, so small shapes look right, but scale grows with distance from the centre.
 - On a Mercator map, scale grows away from the equator. On this map, scale grows away from the centre.
-- The centre is the antipode of your town: for a place at (lat, lon) the centre is (−lat, lon + 180°), set with `projection.rotate`.
+- On the inside-out map the centre is the antipode of your town: for a place at (lat, lon) the centre is (−lat, lon + 180°), set with `projection.rotate`.
+- The slider moves the centre from your town along a great circle heading east, 180° to the antipode, while the zoom is set so that your town moves steadily from the centre out to the edge circle. Heading east keeps the path away from the poles, so the map does not flip.
 - At angular distance *c* from the centre, lengths are enlarged by 2 / (1 + cos *c*) and areas by the square of that. At *c* = 180° (your town itself) the enlargement is infinite, so the place cannot be drawn as a point and appears as the outer circle.
 - Dashed circles mark fixed ground distances from your town. Because they are centred on the projection centre, they appear as concentric circles.
 

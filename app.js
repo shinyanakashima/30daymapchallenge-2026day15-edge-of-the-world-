@@ -37,24 +37,22 @@
     en: {
       kicker: "#30DayMapChallenge 2026 · Day 15 · Inside out",
       title: "Your town, the edge of the world",
-      lede: "Your town goes all the way around the outside. The other side of the Earth is in the middle.",
+      lede: "Slide to turn the map inside out. Your town ends up all the way around the outside of the world.",
       yourTown: "Your town",
-      realign: "Put back on the edge",
-      moved: "You moved the map, so the edge is now another place. The red dot is your town.",
-      centreAligned: "Map centre (the other side of your town)",
-      centreMoved: "Map centre (moved)",
-      edgePoint: "the point on the edge",
       townOnMap: (n) => `${n} (your town)`,
       searchLabel: "Search for a town",
       searchPlaceholder: "Change your town: search (e.g. New York)",
       useLocation: "Use where I am",
       circles: "Equal circles",
       share: "Share",
-      hint: "You can also click the map: that point becomes your town. Drag to move, scroll or pinch to zoom.",
+      flipNormal: "Normal",
+      flipInside: "Inside out",
+      flipLabel: "Turn the map inside out",
+      play: "Play",
+      hint: "Click the map: that point becomes your town. Scroll or pinch to zoom.",
       details: "Details",
-      selected: "Your town (all around the edge)",
-      centre: "Map centre (the other side of the Earth)",
-      stretchCaption: "Stretch at each city (relative to the centre)",
+      centreLabel: "Centre of the inside-out map",
+      stretchCaption: "Stretch on the inside-out map (relative to the centre)",
       city: "City",
       distance: "From centre",
       length: "Length",
@@ -65,27 +63,20 @@
       aboutH1: "What is wrong with this map",
       aboutP1: "This is a stereographic projection. It keeps angles correct, so small shapes look right, but sizes grow the farther you go from the centre.",
       aboutP2: "On a Mercator map, things get bigger the farther they are from the equator. On this map, things get bigger the farther they are from the centre.",
-      aboutP3: "The centre here is the antipode of the place you chose — the point on the exact opposite side of the Earth. The antipode of the centre would be stretched to infinite size, so the place you chose cannot be drawn as a point. It wraps around the whole map as its outer edge. The area within 500 km of it (the red band) fills 89% of the map, and the rest of the world is squeezed into the middle.",
+      aboutP3: "At the left end of the slider the map is centred on your town, like an ordinary map. Moving the slider turns the centre away, until it reaches the point on the exact opposite side of the Earth. In this projection the point opposite the centre is stretched to infinite size, so your town can no longer be drawn as a point: it wraps around the whole map as its outer edge. The area within 500 km of it (the red band) then fills 89% of the map, and the rest of the world is squeezed into the middle.",
       notesH: "Notes",
-      note1: "The map is cut at 178.5° from the centre. The small area within 1.5° (about 170 km) of the chosen place cannot be drawn; the outer circle stands for it.",
+      note1: "The map is cut at 178.5° from the centre. On the inside-out map, the small area within 1.5° (about 170 km) of your town cannot be drawn; the outer circle stands for it.",
       note2: "Your location is used only inside your browser. It is not sent anywhere and not saved. It is added to a link only if you press Share and confirm.",
       note3: 'Data: <a href="https://www.naturalearthdata.com/">Natural Earth</a> (public domain): Admin 0 countries 1:110m and 1:50m (via <a href="https://github.com/topojson/world-atlas">world-atlas</a>), Populated Places 1:10m.',
       credit: 'Data: <a href="https://www.naturalearthdata.com/">Natural Earth</a>',
       ocean: "Ocean",
       land: "Land",
       edgeRow: "the edge",
-      infinite: "∞",
       noResults: "No matching town",
       myLocation: "Where you are",
       myLocationInline: "where you are",
       pointName: "Point on the map",
       theSelected: "your town",
-      antipodeOf: (n) => `Opposite side from ${n}`,
-      mapCentre: "Map centre",
-      through: "↕ 12,742 km straight through the Earth",
-      viewEdge: "Whole map",
-      viewCentre: "Around the centre",
-      viewLabel: "View",
       shareCaption: (n, m, e) => [`${m}% of this map is within 500 km of ${n}`, `That area is ${e}% of the Earth's surface.`],
       near: "near",
       geoUnsupported: "This browser cannot provide a location.",
@@ -98,29 +89,27 @@
       copyFailed: "Copy this link:",
       zoomIn: "Zoom in",
       zoomOut: "Zoom out",
-      mapLabel: (n) => `Stereographic world map centred on the antipode of ${n}. ${n} forms the outer edge.`,
+      mapLabel: (n) => `Stereographic world map that turns inside out: ${n} becomes the outer edge of the world.`,
     },
     ja: {
       kicker: "#30DayMapChallenge 2026 · Day 15 · Inside out",
       title: "あなたの町が、世界の果てになる",
-      lede: "あなたの町が地図の外側をぐるりと囲み、地球の裏側が真ん中に来ます。",
+      lede: "スライダーで地図を裏返すと、あなたの町が世界の外周になります。",
       yourTown: "あなたの町",
-      realign: "外周に戻す",
-      moved: "地図を動かしたので、今の外周はあなたの町ではありません。赤い点があなたの町です。",
-      centreAligned: "地図の中心（あなたの町の裏側）",
-      centreMoved: "地図の中心（動かした位置）",
-      edgePoint: "外周の地点",
       townOnMap: (n) => `${n}（あなたの町）`,
       searchLabel: "町を検索",
       searchPlaceholder: "あなたの町を変える：検索（例：札幌、New York）",
       useLocation: "現在地にする",
       circles: "同じ大きさの円",
       share: "共有",
-      hint: "地図をクリックすると、その地点があなたの町になります。ドラッグで移動、スクロールやピンチで拡大縮小。",
+      flipNormal: "ふつう",
+      flipInside: "裏返し",
+      flipLabel: "地図を裏返す",
+      play: "再生",
+      hint: "地図をクリックすると、その地点があなたの町になります。スクロールやピンチで拡大縮小。",
       details: "詳細",
-      selected: "あなたの町（外周ぜんぶ）",
-      centre: "地図の中心（あなたの町の裏側）",
-      stretchCaption: "各都市の伸び率（中心を1とする）",
+      centreLabel: "裏返した地図の中心",
+      stretchCaption: "裏返した地図での伸び率（中心を1とする）",
       city: "都市",
       distance: "中心から",
       length: "長さ",
@@ -131,27 +120,20 @@
       aboutH1: "この地図のどこがおかしいか",
       aboutP1: "これはステレオ図法（平射図法）の世界地図です。角度が正しい図法なので小さな形は正しく見えますが、中心から離れるほど大きく描かれます。",
       aboutP2: "メルカトル図法では赤道から離れるほど大きくなります。この地図では、中心から離れるほど大きくなります。",
-      aboutP3: "地図の中心は、選んだ場所の地球の裏側です。中心の裏側の点は無限大に引き伸ばされるので、選んだ場所は点として描けません。そのため地図全体を囲む外周になります。選んだ場所から500 km以内（赤い帯）が地図の89%を占め、残りの世界は中央に押し込まれます。",
+      aboutP3: "スライダーの左端では、あなたの町を中心にしたふつうの地図です。スライダーを動かすと中心が移っていき、右端で地球のちょうど裏側の地点に着きます。この図法では中心の裏側の点が無限大に引き伸ばされるので、あなたの町は点として描けなくなり、地図全体を囲む外周になります。このとき、町から500 km以内（赤い帯）が地図の89%を占め、残りの世界は中央に押し込まれます。",
       notesH: "注記",
-      note1: "中心から178.5°より外側は切り取っています。選んだ場所から1.5°（約170 km）以内は描けないため、外周の円がその場所を表します。",
+      note1: "中心から178.5°より外側は切り取っています。裏返した地図では、あなたの町から1.5°（約170 km）以内は描けないため、外周の円がその場所を表します。",
       note2: "位置情報はブラウザの中だけで使い、どこにも送信せず、保存もしません。「共有」を押して確認したときだけ、リンクに含めます。",
       note3: '出典：<a href="https://www.naturalearthdata.com/">Natural Earth</a>（パブリックドメイン）。国境 1:110m・1:50m（<a href="https://github.com/topojson/world-atlas">world-atlas</a> 経由）、Populated Places 1:10m。',
       credit: '出典：<a href="https://www.naturalearthdata.com/">Natural Earth</a>',
       ocean: "海",
       land: "陸",
       edgeRow: "外周",
-      infinite: "∞",
       noResults: "該当する町がありません",
       myLocation: "現在地",
       myLocationInline: "現在地",
       pointName: "地図上の地点",
       theSelected: "あなたの町",
-      antipodeOf: (n) => `${n}の裏側`,
-      mapCentre: "地図の中心",
-      through: "↕ 地球を貫いて一直線に 12,742 km",
-      viewEdge: "外周まで",
-      viewCentre: "中心付近",
-      viewLabel: "表示",
       shareCaption: (n, m, e) => [`この地図の${m}%は、${n}から500 km以内`, `地球の表面では、わずか${e}%の範囲です`],
       near: "付近",
       geoUnsupported: "このブラウザでは位置情報を使えません。",
@@ -164,7 +146,7 @@
       copyFailed: "このリンクをコピーしてください：",
       zoomIn: "拡大",
       zoomOut: "縮小",
-      mapLabel: (n) => `${n}の地球の裏側を中心にしたステレオ図法の世界地図。${n}が外周になっています。`,
+      mapLabel: (n) => `裏返るステレオ図法の世界地図。${n}が世界の外周になります。`,
     },
   };
   let lang = "en";
@@ -177,26 +159,24 @@
   const ctx = canvas.getContext("2d");
   const els = {
     q: $("q"), results: $("results"), geo: $("geo"), circles: $("circles"), share: $("share"),
-    zoomIn: $("zoomIn"), zoomOut: $("zoomOut"), status: $("status"),
-    viewEdge: $("viewEdge"), viewCentre: $("viewCentre"), ctrLabel: document.querySelector(".facts .ctr dt"),
+    zoomIn: $("zoomIn"), zoomOut: $("zoomOut"), status: $("status"), flip: $("flip"), play: $("play"),
     selName: $("selName"), selCoord: $("selCoord"), ctrCoord: $("ctrCoord"), ctrKind: $("ctrKind"),
     stretchBody: $("stretchBody"), circleLegend: $("circleLegend"), info: $("info"), infoToggle: $("infoToggle"),
   };
 
   // ---------- state ----------
   const state = {
-    sel: { ...DEFAULT, source: "default" },
-    centre: antipode(DEFAULT.lon, DEFAULT.lat), // [lon, lat]
-    k: 1,
+    sel: { ...DEFAULT, source: "default" }, // your town
+    t: 0, // 0 = ordinary map centred on your town, 1 = inside out (centred on the opposite side)
+    centre: [DEFAULT.lon, DEFAULT.lat], // [lon, lat], derived from sel and t
+    k: 1, // zoom set by the viewer, on top of the automatic zoom
     showCircles: false,
-    interacting: false,
     myLoc: null, // [lon, lat], kept in memory only
-    edgeName: null, // name of the place at the edge when the map has been moved
   };
   let world110 = null, world50 = null; // { land, borders, countries }
   let places = null, searchIndex = null, countryLabels = null;
   let width = 0, height = 0, dpr = 1, cx = 0, cy = 0, baseScale = 1;
-  let anim = null;
+  let anim = null, playTimer = 0;
 
   const projection = d3.geoStereographic().clipAngle(CLIP).precision(0.4);
   const path = d3.geoPath(projection, ctx);
@@ -222,12 +202,14 @@
   }
 
   // ---------- helpers ----------
+  const RAD = Math.PI / 180;
   function antipode(lon, lat) {
     return [wrapLon(lon + 180), -lat];
   }
   function wrapLon(lon) {
     return ((((lon + 180) % 360) + 360) % 360) - 180;
   }
+  function clamp01(v) { return Math.max(0, Math.min(1, v)); }
   function fmtLat(v) { return `${Math.abs(v).toFixed(2)}°${v >= 0 ? "N" : "S"}`; }
   function fmtLon(v) { return `${Math.abs(v).toFixed(2)}°${v >= 0 ? "E" : "W"}`; }
   function fmtCoord(lat, lon) { return `${fmtLat(lat)}, ${fmtLon(lon)}`; }
@@ -248,7 +230,70 @@
     if (sel.name) return sel.name;
     return t("pointName");
   }
+  function shortName() {
+    const s = state.sel;
+    if (s.source === "geo") return t("myLocationInline");
+    return (lang === "ja" ? s.ja : s.name) || t("theSelected");
+  }
   function setStatus(msg) { els.status.textContent = msg || ""; }
+
+  // ---------- turning inside out ----------
+  // The centre travels from your town along a great circle heading east, 180° to the
+  // opposite side. Heading east keeps the path away from the poles (unless the town
+  // is at a pole), so the map turns without sudden flips.
+  function centreFor(sel, tt) {
+    const d = Math.PI * tt, th = Math.PI / 2;
+    const p1 = sel.lat * RAD, l1 = sel.lon * RAD;
+    const p2 = Math.asin(Math.sin(p1) * Math.cos(d) + Math.cos(p1) * Math.sin(d) * Math.cos(th));
+    const l2 = l1 + Math.atan2(Math.sin(th) * Math.sin(d) * Math.cos(p1), Math.cos(d) - Math.sin(p1) * Math.sin(p2));
+    return [wrapLon(l2 / RAD), p2 / RAD];
+  }
+  // Zoom chosen so that your town moves steadily from the centre (t = 0) out to
+  // the edge circle (t = 1): its distance from the centre on screen is t times the
+  // final edge radius. At t = 0 this shows about 115° around your town, like an
+  // ordinary map.
+  function autoK(tt) {
+    const edge = Math.tan((CLIP / 2) * RAD);
+    const half = Math.min(90 * tt, CLIP / 2) * RAD; // half the angle from the centre to your town
+    if (half < 1e-4) return edge / (Math.PI / 2);
+    return Math.max(1, edge * tt / Math.tan(half));
+  }
+  function insideOut() { return state.t >= 0.999; }
+
+  function setT(tt) {
+    state.t = clamp01(tt);
+    state.centre = centreFor(state.sel, state.t);
+    els.flip.value = String(Math.round(state.t * 1000));
+  }
+
+  function stopPlay() {
+    if (anim) { anim.stop(); anim = null; }
+    clearTimeout(playTimer);
+  }
+
+  function playTo(target, duration) {
+    stopPlay();
+    if (reduceMotion.matches) { setT(target); render(false); updateInfo(); return; }
+    const from = state.t;
+    if (Math.abs(target - from) < 1e-4) { setT(target); render(false); updateInfo(); return; }
+    const ms = duration * Math.abs(target - from);
+    anim = d3.timer((elapsed) => {
+      const u = Math.min(1, elapsed / ms);
+      setT(from + (target - from) * d3.easeCubicInOut(u));
+      if (u >= 1) { anim.stop(); anim = null; render(false); updateInfo(); }
+      else render(true);
+    });
+  }
+
+  // show your town as an ordinary map, then turn it inside out
+  function playFromStart(delay) {
+    stopPlay();
+    if (reduceMotion.matches) { setT(1); render(false); updateInfo(); return; }
+    setT(0);
+    render(false);
+    updateInfo();
+    playTimer = setTimeout(() => playTo(1, 4200), delay);
+  }
 
   // ---------- layout ----------
   function resize() {
@@ -270,10 +315,7 @@
       els.info.style.maxHeight = `${Math.max(160, height - topBottom - 24)}px`;
     } else {
       els.info.style.maxHeight = "";
-    }
-    if (width < 760) {
-      sizeGlobe();
-      const infoH = els.info.classList.contains("collapsed") ? els.info.offsetHeight : 150;
+      const infoH = els.info.classList.contains("collapsed") ? els.info.offsetHeight : 120;
       top = document.querySelector(".top").getBoundingClientRect().bottom + 4;
       bottom = height - infoH - 12;
       if (bottom - top < 200) { top = 0; bottom = height; }
@@ -282,15 +324,16 @@
     cy = (top + bottom) / 2;
     const margin = width < 760 ? 22 : 34;
     const radius = Math.max(60, Math.min(availW, bottom - top) / 2 - margin);
-    baseScale = radius / Math.tan((CLIP / 2) * Math.PI / 180); // d3 stereographic: r = scale · tan(c / 2)
-    sizeGlobe();
+    baseScale = radius / Math.tan((CLIP / 2) * RAD); // d3 stereographic: r = scale · tan(c / 2)
     render();
   }
+
+  function scaleNow() { return baseScale * autoK(state.t) * state.k; }
 
   function updateProjection() {
     projection
       .rotate([-state.centre[0], -state.centre[1]])
-      .scale(baseScale * state.k)
+      .scale(scaleNow())
       .translate([cx, cy]);
   }
 
@@ -300,7 +343,7 @@
     if (rafId) cancelAnimationFrame(rafId);
     rafId = requestAnimationFrame(() => { rafId = 0; render(fast); });
     clearTimeout(fullTimer);
-    if (fast) fullTimer = setTimeout(() => { if (!state.interacting && !anim) render(false); }, 180);
+    if (fast) fullTimer = setTimeout(() => { if (!anim) render(false); }, 180);
   }
 
   function render(fast) {
@@ -310,7 +353,6 @@
     ctx.fillStyle = COLORS.outside;
     ctx.fillRect(0, 0, width, height);
 
-    // sphere (ocean)
     ctx.beginPath(); path({ type: "Sphere" });
     ctx.fillStyle = COLORS.ocean; ctx.fill();
 
@@ -340,26 +382,25 @@
     const boxes = [];
     drawShareBand();
     drawRings(boxes);
+    drawTown(boxes);
     drawCities(boxes);
-    drawCentre(boxes);
     if (!fast) drawCountryLabels(boxes);
     drawMyLocation();
     ctx.restore();
 
     drawEdge();
     drawShareCaption();
-    if (!globeTimer) drawGlobe();
   }
 
-  // The band within SHARE_KM of the selected place. On this map it takes most of
+  // The band within SHARE_KM of your town. On the inside-out map it takes most of
   // the disc, while on the globe it is a tiny patch.
   const SHARE_KM = 500;
   function shareNumbers() {
-    const half = (CLIP / 2) * Math.PI / 180;
+    const half = (CLIP / 2) * RAD;
     const rel = Math.tan((Math.PI - SHARE_KM / EARTH_R) / 2) / Math.tan(half);
     return { map: 1 - rel * rel, earth: (1 - Math.cos(SHARE_KM / EARTH_R)) / 2, rel };
   }
-  function edgeRadius() { return baseScale * state.k * Math.tan(((CLIP / 2) * Math.PI) / 180); }
+  function edgeRadius() { return scaleNow() * Math.tan((CLIP / 2) * RAD); }
 
   let hatchPattern = null;
   function hatch() {
@@ -376,7 +417,7 @@
   }
 
   function drawShareBand() {
-    if (!aligned()) return;
+    if (!insideOut()) return;
     const rEdge = edgeRadius(), r = rEdge * shareNumbers().rel;
     if (r > Math.hypot(width, height)) return;
     ctx.beginPath();
@@ -388,11 +429,11 @@
   }
 
   function drawShareCaption() {
-    if (!aligned()) return;
+    if (!insideOut()) return;
     const rEdge = edgeRadius(), n = shareNumbers(), r = rEdge * n.rel;
     const y = cy + (r + rEdge) / 2;
     if (width < 760 || r > Math.hypot(width, height) || y > height - 10) return; // phones: shown in the panel
-    const fs = width < 760 ? 12 : 14;
+    const fs = 14;
     const [l1, l2] = t("shareCaption")(shortName(), Math.round(n.map * 100), (n.earth * 100).toFixed(2));
     ctx.textAlign = "center"; ctx.textBaseline = "middle";
     ctx.font = `700 ${fs}px system-ui, -apple-system, 'Segoe UI', 'Hiragino Sans', sans-serif`;
@@ -403,13 +444,13 @@
     ctx.textAlign = "start";
   }
 
-  // Circles at fixed ground distances from the selected place. Around the
-  // centre of an azimuthal projection they are concentric screen circles.
-  const RING_KM = [100, 200, 500, 1000, 2000, 5000, 10000, 15000];
+  // Circles at fixed ground distances from your town. When the map is inside out
+  // they are concentric circles around the centre.
+  const RING_KM = [100, 200, 1000, 2000, 5000, 10000, 15000];
   function drawRings(boxes) {
-    if (!aligned()) return;
+    if (!insideOut()) return;
     const diag = Math.hypot(width, height);
-    const R = baseScale * state.k;
+    const R = scaleNow();
     let last = Infinity;
     ctx.save();
     ctx.setLineDash([4, 4]);
@@ -420,9 +461,8 @@
     const name = shortName();
     let first = true;
     for (const km of RING_KM) {
-      if (km === SHARE_KM) continue;
       const c = Math.PI - km / EARTH_R; // angle from the centre
-      if (c > (CLIP * Math.PI) / 180) continue;
+      if (c > CLIP * RAD) continue;
       const r = R * Math.tan(c / 2);
       if (r > diag || r < 28 || last - r < 26) continue;
       last = r;
@@ -442,11 +482,31 @@
     ctx.restore();
   }
 
+  // Your town as a point, while it can still be drawn as one.
+  function drawTown(boxes) {
+    const town = [state.sel.lon, state.sel.lat];
+    if (d3.geoDistance(town, state.centre) > (CLIP - 0.5) * RAD) return;
+    const alpha = 1 - clamp01((state.t - 0.9) / 0.09);
+    if (alpha <= 0) return;
+    const p = projection(town);
+    if (!p || p[0] < -40 || p[1] < -40 || p[0] > width + 40 || p[1] > height + 40) return;
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.beginPath(); ctx.arc(p[0], p[1], 6, 0, 2 * Math.PI);
+    ctx.fillStyle = COLORS.edge; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = "#fff"; ctx.stroke();
+    ctx.font = "700 13px system-ui, -apple-system, 'Segoe UI', 'Hiragino Sans', sans-serif";
+    ctx.textBaseline = "middle"; ctx.textAlign = "start";
+    const label = t("townOnMap")(shortName());
+    haloText(label, p[0] + 11, p[1], COLORS.edge);
+    boxes.push([p[0] - 8, p[1] - 10, p[0] + 14 + ctx.measureText(label).width, p[1] + 10]);
+    ctx.restore();
+  }
+
   // Country names, shown where the local scale is large enough for them.
   function drawCountryLabels(boxes) {
     if (!countryLabels) return;
-    const s = baseScale * state.k;
-    const clipRad = ((CLIP - 1) * Math.PI) / 180;
+    const s = scaleNow();
+    const clipRad = (CLIP - 1) * RAD;
     const slack = width < 760 ? 0.8 : 1.2;
     ctx.font = "600 10px system-ui, -apple-system, 'Segoe UI', 'Hiragino Sans', sans-serif";
     ctx.textAlign = "center"; ctx.textBaseline = "middle";
@@ -467,6 +527,7 @@
       ctx.strokeText(text, p[0], p[1]);
       ctx.fillStyle = "rgba(92, 86, 72, 0.9)"; ctx.fillText(text, p[0], p[1]);
     }
+    ctx.textAlign = "start";
   }
 
   function haloText(text, x, y, color) {
@@ -475,45 +536,9 @@
     ctx.fillStyle = color; ctx.fillText(text, x, y);
   }
 
-  // The map centre: same marker as the far end of the line in the globe inset.
-  function drawCentre(boxes) {
-    const isAligned = aligned();
-    let x = cx, y = cy;
-    if (!isAligned) {
-      const a = antipode(state.sel.lon, state.sel.lat);
-      if (d3.geoDistance(a, state.centre) > ((CLIP - 0.5) * Math.PI) / 180) return;
-      [x, y] = projection(a);
-      if (x < -50 || y < -50 || x > width + 50 || y > height + 50) return;
-      // your town itself is now drawable
-      const tpos = projection([state.sel.lon, state.sel.lat]);
-      if (d3.geoDistance([state.sel.lon, state.sel.lat], state.centre) < ((CLIP - 0.3) * Math.PI) / 180 && tpos) {
-        ctx.beginPath(); ctx.arc(tpos[0], tpos[1], 6, 0, 2 * Math.PI);
-        ctx.fillStyle = COLORS.edge; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = "#fff"; ctx.stroke();
-        ctx.font = "700 12px system-ui, -apple-system, 'Segoe UI', 'Hiragino Sans', sans-serif";
-        ctx.textBaseline = "middle"; ctx.textAlign = "start";
-        haloText(t("townOnMap")(shortName()), tpos[0] + 10, tpos[1], COLORS.edge);
-      }
-    }
-    return drawAntipodeMarker(boxes, x, y);
-  }
-
-  function drawAntipodeMarker(boxes, cx, cy) {
-    ctx.beginPath(); ctx.arc(cx, cy, 5, 0, 2 * Math.PI);
-    ctx.fillStyle = "#fff"; ctx.fill();
-    ctx.lineWidth = 2.5; ctx.strokeStyle = COLORS.edge; ctx.stroke();
-    ctx.font = "600 11px system-ui, -apple-system, 'Segoe UI', 'Hiragino Sans', sans-serif";
-    ctx.textBaseline = "middle"; ctx.textAlign = "start";
-    const label = t("antipodeOf")(shortName());
-    const lw = ctx.measureText(label).width;
-    ctx.textAlign = "center";
-    haloText(label, cx, cy - 15, COLORS.edge);
-    ctx.textAlign = "start";
-    boxes.push([cx - lw / 2 - 4, cy - 24, cx + lw / 2 + 4, cy + 8]);
-  }
-
   function drawMyLocation() {
-    if (!state.myLoc) return;
-    if (d3.geoDistance(state.myLoc, state.centre) > ((CLIP - 0.3) * Math.PI) / 180) return; // on the edge
+    if (!state.myLoc || state.sel.source === "geo") return;
+    if (d3.geoDistance(state.myLoc, state.centre) > (CLIP - 0.3) * RAD) return;
     const p = projection(state.myLoc);
     if (!p || p[0] < -20 || p[1] < -20 || p[0] > width + 20 || p[1] > height + 20) return;
     ctx.beginPath(); ctx.arc(p[0], p[1], 9, 0, 2 * Math.PI);
@@ -523,32 +548,14 @@
     ctx.lineWidth = 2; ctx.strokeStyle = "#fff"; ctx.stroke();
     ctx.font = "600 11px system-ui, -apple-system, 'Segoe UI', 'Hiragino Sans', sans-serif";
     ctx.textBaseline = "middle"; ctx.textAlign = "start";
-    const nearCentre = Math.hypot(p[0] - cx, p[1] - cy) < 24;
-    haloText(t("myLocation"), p[0] + 10, nearCentre ? cy + 14 : p[1], COLORS.me);
-  }
-
-  // True when the map centre is the other side of your town, i.e. your town is the edge.
-  function aligned() {
-    if (anim) return true;
-    return d3.geoDistance(antipode(state.sel.lon, state.sel.lat), state.centre) < 0.003;
-  }
-  function edgeName() {
-    const e = antipode(state.centre[0], state.centre[1]);
-    if (state.edgeName) return lang === "ja" && state.edgeName.ja ? state.edgeName.ja : state.edgeName.en;
-    return fmtCoord(e[1], e[0]);
-  }
-
-  function shortName() {
-    const s = state.sel;
-    if (s.source === "geo") return t("myLocationInline");
-    return (lang === "ja" ? s.ja : s.name) || t("theSelected");
+    haloText(t("myLocation"), p[0] + 10, p[1], COLORS.me);
   }
 
   function drawCities(boxes) {
     const placed = [];
     ctx.font = "600 11px system-ui, -apple-system, 'Segoe UI', 'Hiragino Sans', sans-serif";
-    ctx.textBaseline = "middle";
-    const rad = (CLIP - 0.5) * Math.PI / 180;
+    ctx.textBaseline = "middle"; ctx.textAlign = "start";
+    const rad = (CLIP - 0.5) * RAD;
     for (const c of REF_CITIES) {
       if (d3.geoDistance([c.lon, c.lat], state.centre) > rad) continue;
       const p = projection([c.lon, c.lat]);
@@ -560,27 +567,33 @@
     for (const [p, c] of placed) {
       if (placed.some(([q]) => q !== p && Math.hypot(q[0] - p[0], q[1] - p[1]) < 24)) continue;
       const label = lang === "ja" ? c.ja : c.name;
+      const box = [p[0] - 4, p[1] - 8, p[0] + 8 + ctx.measureText(label).width, p[1] + 8];
+      if (boxes.some((b) => box[0] < b[2] && box[2] > b[0] && box[1] < b[3] && box[3] > b[1])) continue;
       ctx.fillStyle = COLORS.city;
       ctx.lineWidth = 3; ctx.strokeStyle = "rgba(244,240,230,0.85)";
       ctx.strokeText(label, p[0] + 5, p[1]);
       ctx.fillText(label, p[0] + 5, p[1]);
-      boxes.push([p[0] - 4, p[1] - 8, p[0] + 8 + ctx.measureText(label).width, p[1] + 8]);
+      boxes.push(box);
     }
   }
 
+  // The outer circle. It only stands for your town once the map is inside out,
+  // so the name fades in near the end of the turn.
   function drawEdge() {
-    const r = baseScale * state.k * Math.tan((CLIP / 2) * Math.PI / 180);
+    const r = edgeRadius();
     const diag = Math.hypot(width, height);
-    ctx.beginPath(); ctx.arc(cx, cy, r, 0, 2 * Math.PI);
-    ctx.lineWidth = 3; ctx.strokeStyle = aligned() ? COLORS.edge : "#7d8a90"; ctx.stroke();
-
     if (r > diag * 3) return; // edge far off screen
-    const isAligned = aligned();
-    const label = isAligned ? displayName(state.sel) : edgeName();
+    const alpha = clamp01((state.t - 0.8) / 0.19);
+    ctx.save();
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, 2 * Math.PI);
+    ctx.lineWidth = 3; ctx.strokeStyle = COLORS.edge; ctx.globalAlpha = 0.25 + 0.75 * alpha; ctx.stroke();
+    if (alpha <= 0) { ctx.restore(); return; }
+    ctx.globalAlpha = alpha;
+    const label = displayName(state.sel);
     const unit = (lang === "ja" ? label : label.toUpperCase()) + (lang === "ja" ? "　·　" : "  ·  ");
     const fontSize = width < 760 ? 12 : 14;
     ctx.font = `600 ${fontSize}px system-ui, -apple-system, 'Segoe UI', 'Hiragino Sans', sans-serif`;
-    ctx.fillStyle = isAligned ? COLORS.edgeText : "#8d999e";
+    ctx.fillStyle = COLORS.edgeText;
     ctx.textBaseline = "middle";
     ctx.textAlign = "center";
     const tr = r + fontSize * 0.95;
@@ -607,96 +620,14 @@
         a += w / tr;
       }
     }
-    ctx.textAlign = "start";
-  }
-
-  // ---------- globe inset: the selected place and the map centre joined through the Earth ----------
-  const globeCanvas = $("globe");
-  const gctx = globeCanvas.getContext("2d");
-  const globeProj = d3.geoOrthographic().clipAngle(90).precision(0.5);
-  const globePath = d3.geoPath(globeProj, gctx);
-  let globeW = 0, globeH = 0, globeR = 0, globeSpin = 0, globeTimer = null;
-
-  function sizeGlobe() {
-    const small = width < 760;
-    globeR = small ? 40 : 50;
-    globeW = globeR * 2 + 8;
-    globeH = globeR * 2 + 14;
-    globeCanvas.width = Math.round(globeW * dpr);
-    globeCanvas.height = Math.round(globeH * dpr);
-    globeCanvas.style.width = globeW + "px";
-    globeCanvas.style.height = globeH + "px";
-  }
-
-  function drawGlobe() {
-    if (!globeW) return;
-    const P = anim ? antipode(state.centre[0], state.centre[1]) : [state.sel.lon, state.sel.lat]; // your town
-    const gx = globeW / 2, gy = globeH / 2;
-    // Look at the Earth from the side: the view centre is 90° away from P, so P and
-    // its antipode sit on the outline, top and bottom. Spinning moves the view
-    // centre around the P–antipode axis.
-    const toPole = d3.geoRotation([-P[0], 90 - P[1]]);
-    const Q = toPole.invert([globeSpin, 0]);
-    globeProj.scale(globeR).translate([gx, gy]).rotate([-Q[0], -Q[1], 0]);
-    let p = globeProj(P);
-    const a = (Math.atan2(p[1] - gy, p[0] - gx) * 180) / Math.PI;
-    globeProj.rotate([-Q[0], -Q[1], -(a + 90)]);
-    p = globeProj(P);
-    if (p[1] > gy) globeProj.rotate([-Q[0], -Q[1], a + 90]);
-
-    const c = gctx;
-    c.setTransform(dpr, 0, 0, dpr, 0, 0);
-    c.clearRect(0, 0, globeW, globeH);
-    c.beginPath(); globePath({ type: "Sphere" });
-    c.fillStyle = COLORS.ocean; c.fill();
-    const w = world110 || world50;
-    if (w) {
-      c.beginPath(); globePath(w.land);
-      c.fillStyle = COLORS.land; c.fill();
-      c.lineWidth = 0.5; c.strokeStyle = COLORS.border; c.stroke();
-    }
-    // cut through the Earth
-    const top = gy - globeR, bottom = gy + globeR;
-    c.beginPath(); c.ellipse(gx, gy, globeR * 0.2, globeR, 0, 0, 2 * Math.PI);
-    const grad = c.createRadialGradient(gx, gy, 0, gx, gy, globeR);
-    grad.addColorStop(0, "#e9b07a"); grad.addColorStop(0.55, "#a8553c"); grad.addColorStop(1, "#5b3128");
-    c.fillStyle = grad; c.globalAlpha = 0.9; c.fill(); c.globalAlpha = 1;
-    c.beginPath(); globePath({ type: "Sphere" });
-    c.lineWidth = 1; c.strokeStyle = "rgba(255,255,255,0.55)"; c.stroke();
-
-    if (state.myLoc && d3.geoDistance(state.myLoc, Q) < Math.PI / 2) {
-      const m = globeProj(state.myLoc);
-      c.beginPath(); c.arc(m[0], m[1], 3, 0, 2 * Math.PI);
-      c.fillStyle = COLORS.me; c.fill(); c.lineWidth = 1; c.strokeStyle = "#fff"; c.stroke();
-    }
-
-    c.beginPath(); c.moveTo(gx, top); c.lineTo(gx, bottom);
-    c.lineWidth = 2.5; c.strokeStyle = COLORS.edge; c.stroke();
-    c.beginPath(); c.arc(gx, gy, 2, 0, 2 * Math.PI); c.fillStyle = "#fff"; c.fill();
-    c.beginPath(); c.arc(gx, top, 5, 0, 2 * Math.PI); c.fillStyle = COLORS.edge; c.fill();
-    c.beginPath(); c.arc(gx, bottom, 5, 0, 2 * Math.PI); c.fillStyle = "#fff"; c.fill();
-    c.lineWidth = 2.5; c.strokeStyle = COLORS.edge; c.stroke();
-
-  }
-
-  function startGlobe() {
-    if (globeTimer) { globeTimer.stop(); globeTimer = null; }
-    if (reduceMotion.matches) { drawGlobe(); return; }
-    let last = 0;
-    globeTimer = d3.timer((elapsed) => {
-      globeSpin = (globeSpin + ((elapsed - last) / 1000) * 12) % 360; // 12°/s
-      last = elapsed;
-      drawGlobe();
-    });
+    ctx.restore();
   }
 
   // ---------- info panel ----------
   function updateInfo() {
     const s = state.sel;
-    const isAligned = aligned() || !!anim;
-    const centre = anim ? antipode(s.lon, s.lat) : state.centre;
+    const centre = antipode(s.lon, s.lat); // centre of the inside-out map
     const name = displayName(s);
-    setMovedUI(isAligned);
     const country = s.source === "geo" ? "" : (s.country ? ` (${s.country})` : "");
     els.selName.textContent = name + country;
     $("townName").textContent = name;
@@ -714,21 +645,13 @@
       const len = 2 / (1 + Math.cos(d));
       rows.push({ label: t("myLocation"), d, len, area: len * len, me: true });
     }
-    const clipRad = (CLIP * Math.PI) / 180;
-    const visible = rows.filter((r) => r.d <= clipRad);
+    const visible = rows.filter((r) => r.d <= CLIP * RAD);
     visible.sort((a, b) => a.d - b.d);
-    if (!isAligned) {
-      const d = d3.geoDistance([s.lon, s.lat], centre);
-      const len = 2 / (1 + Math.cos(d));
-      if (d <= clipRad) visible.push({ label: name, d, len, area: len * len, town: true });
-      visible.sort((a, b) => a.d - b.d);
-    }
-    visible.push({ label: `${isAligned ? name : edgeName()} (${t("edgeRow")})`, d: Math.PI, len: Infinity, area: Infinity, edge: true });
+    visible.push({ label: `${name} (${t("edgeRow")})`, d: Math.PI, len: Infinity, area: Infinity, edge: true });
     els.stretchBody.replaceChildren(...visible.map((r) => {
       const tr = document.createElement("tr");
       if (r.edge) tr.className = "edge";
       if (r.me) tr.className = "me";
-      if (r.town) tr.className = "edge";
       const km = Math.round((r.d * EARTH_R) / 100) * 100;
       const cells = [r.label, `${km.toLocaleString("en-US")} km`,
         r.edge ? "∞" : fmtFactor(r.len),
@@ -737,77 +660,28 @@
       return tr;
     }));
     const n = shareNumbers();
-    const [l1, l2] = t("shareCaption")(name, Math.round(n.map * 100), (n.earth * 100).toFixed(2));
-    $("shareNote").textContent = `${l1}. ${l2}`.replace("。.", "。").replace(/以内\. /, "以内。");
+    const [l1, l2] = t("shareCaption")(shortName(), Math.round(n.map * 100), (n.earth * 100).toFixed(2));
+    $("shareNote").textContent = lang === "ja" ? `${l1}。${l2}。` : `${l1}. ${l2}`;
     updateCentreKind();
   }
 
   function updateCentreKind() {
     const w = world50 || world110;
     if (!w) { els.ctrKind.textContent = "—"; return; }
-    const centre = anim ? antipode(state.sel.lon, state.sel.lat) : state.centre;
+    const centre = antipode(state.sel.lon, state.sel.lat);
     const hit = w.countries.find((f) => d3.geoContains(f, centre));
     els.ctrKind.textContent = hit ? `${t("land")} — ${hit.properties.name}` : t("ocean");
   }
 
   // ---------- selection ----------
-  // Zoom that fits the area within 100° of the centre (a bit more than a hemisphere).
-  const centreK = () => Math.tan(((CLIP / 2) * Math.PI) / 180) / Math.tan((50 * Math.PI) / 180);
-  let viewTimer = 0;
-
-  function zoomTo(k, ms) {
-    canvasSel.interrupt();
-    if (!ms || reduceMotion.matches) canvasSel.call(zoom.scaleTo, k);
-    else canvasSel.transition().duration(ms).ease(d3.easeCubicInOut).call(zoom.scaleTo, k);
-  }
-
-  function updateViewButtons() {
-    const kc = centreK();
-    els.viewEdge.setAttribute("aria-pressed", String(state.k < 1.05));
-    els.viewCentre.setAttribute("aria-pressed", String(Math.abs(Math.log(state.k / kc)) < 0.1));
-  }
-
-  // New place: turn the globe with the whole map in view, so the new edge is seen,
-  // then zoom in on the area around the centre.
-  function select(sel, { animate = true, updateUrl = true } = {}) {
+  // A new town: show it as an ordinary map for a moment, then turn it inside out.
+  function select(sel, { updateUrl = true } = {}) {
     state.sel = sel;
-    state.edgeName = null;
-    clearTimeout(viewTimer);
-    const target = antipode(sel.lon, sel.lat);
-    if (animate && !reduceMotion.matches) {
-      if (state.k > 1.05) zoomTo(1, 800);
-      // turn → zoom in to show where the centre is → back out to the whole, inside-out map
-      animateTo(target, () => {
-        viewTimer = setTimeout(() => {
-          zoomTo(centreK(), 1600);
-          viewTimer = setTimeout(() => zoomTo(1, 1800), 1600 + 2800);
-        }, 450);
-      });
-    } else {
-      stopAnim();
-      state.centre = target;
-      zoomTo(1, 0);
-      render(false);
-    }
+    canvasSel.interrupt();
+    canvasSel.call(zoom.transform, d3.zoomIdentity); // drop any zoom the viewer added
+    playFromStart(700);
     updateInfo();
     if (updateUrl) writeUrl();
-  }
-
-  function stopAnim() { if (anim) { anim.stop(); anim = null; } }
-
-  function animateTo(target, onEnd) {
-    stopAnim();
-    const from = state.centre.slice();
-    const dist = d3.geoDistance(from, target);
-    if (dist < 1e-6) { state.centre = target; render(false); if (onEnd) onEnd(); return; }
-    const interp = d3.geoInterpolate(from, target);
-    const duration = 700 + 900 * (dist / Math.PI);
-    anim = d3.timer((elapsed) => {
-      const tt = Math.min(1, elapsed / duration);
-      state.centre = interp(d3.easeCubicInOut(tt));
-      if (tt >= 1) { state.centre = target; stopAnim(); render(false); updateCentreKind(); if (onEnd) onEnd(); }
-      else render(true);
-    });
   }
 
   function nearestPlace(lon, lat, maxKm) {
@@ -958,68 +832,17 @@
   });
 
   // ---------- map interaction ----------
+  // Zoom only (wheel, pinch, buttons), always about the map centre. The map is not
+  // dragged: what sits at the centre is decided by your town and the slider.
   const canvasSel = d3.select(canvas);
-  let prevT = null, dragged = false;
   const zoom = d3.zoom()
-    .scaleExtent([1, 600])
-    .clickDistance(5)
-    .on("start", (e) => {
-      prevT = e.transform; dragged = false;
-      state.interacting = true;
-      if (e.sourceEvent) clearTimeout(viewTimer);
-      if (e.sourceEvent && e.sourceEvent.type !== "wheel") canvas.classList.add("dragging");
-    })
+    .scaleExtent([0.2, 600])
+    .filter((e) => e.type === "wheel" || (e.type === "touchstart" && e.touches && e.touches.length > 1) || e.type === "touchmove")
     .on("zoom", (e) => {
-      const tr = e.transform;
-      if (tr.k !== prevT.k) {
-        state.k = tr.k;
-        updateViewButtons();
-      } else if (e.sourceEvent) {
-        const dx = tr.x - prevT.x, dy = tr.y - prevT.y;
-        if (dx || dy) {
-          stopAnim();
-          dragged = true;
-          const degPerPx = Math.min(0.5, (2 * 180 / Math.PI) / (baseScale * state.k));
-          const lon = wrapLon(state.centre[0] - dx * degPerPx);
-          const lat = Math.max(-89.9, Math.min(89.9, state.centre[1] + dy * degPerPx));
-          state.centre = [lon, lat];
-          state.edgeName = null;
-          updateInfoLight();
-        }
-      }
-      prevT = tr;
+      state.k = e.transform.k;
       requestRender(true);
-    })
-    .on("end", () => {
-      state.interacting = false;
-      canvas.classList.remove("dragging");
-      if (dragged) {
-        const e = antipode(state.centre[0], state.centre[1]);
-        const p = nearestPlace(e[0], e[1], 60);
-        state.edgeName = p ? { en: `Near ${p[0]}`, ja: `${p[2] || p[0]}${STR.ja.near}` } : null;
-        updateInfo();
-      }
-      requestRender(false);
     });
   canvasSel.call(zoom).on("dblclick.zoom", null);
-
-  function setMovedUI(isAligned) {
-    els.ctrLabel.textContent = isAligned ? t("centreAligned") : t("centreMoved");
-    document.querySelector(".facts .sel dt").textContent = isAligned ? t("selected") : t("yourTown");
-    const lede = $("lede");
-    lede.textContent = isAligned ? t("lede") : t("moved");
-    lede.classList.toggle("is-moved", !isAligned);
-    if ($("realign").hidden === isAligned) return;
-    $("realign").hidden = isAligned;
-    $("shareNote").hidden = !isAligned;
-    if (width < 760) resize(); // the bottom panel changed height
-  }
-
-  function updateInfoLight() {
-    els.ctrCoord.textContent = fmtCoord(state.centre[1], state.centre[0]);
-    const isAligned = aligned();
-    setMovedUI(isAligned);
-  }
 
   canvas.addEventListener("click", (e) => {
     const rect = canvas.getBoundingClientRect();
@@ -1027,22 +850,23 @@
     updateProjection();
     const ll = projection.invert(pt);
     if (!ll || !isFinite(ll[0]) || !isFinite(ll[1])) return;
-    if (d3.geoDistance(ll, state.centre) > (CLIP * Math.PI) / 180) return; // beyond the edge
+    if (d3.geoDistance(ll, state.centre) > CLIP * RAD) return; // beyond the edge
     setStatus("");
     select(selFromPoint(ll[0], ll[1], "click"));
   });
 
-  els.viewEdge.addEventListener("click", () => { clearTimeout(viewTimer); zoomTo(1, 900); });
-  els.viewCentre.addEventListener("click", () => { clearTimeout(viewTimer); zoomTo(centreK(), 900); });
-  $("realign").addEventListener("click", () => {
-    clearTimeout(viewTimer);
-    state.edgeName = null;
-    if (reduceMotion.matches) { state.centre = antipode(state.sel.lon, state.sel.lat); render(false); updateInfo(); }
-    else animateTo(antipode(state.sel.lon, state.sel.lat), () => updateInfo());
-    updateInfoLight();
+  els.zoomIn.addEventListener("click", () => canvasSel.transition().duration(reduceMotion.matches ? 0 : 250).call(zoom.scaleBy, 2));
+  els.zoomOut.addEventListener("click", () => canvasSel.transition().duration(reduceMotion.matches ? 0 : 250).call(zoom.scaleBy, 0.5));
+
+  els.flip.addEventListener("input", () => {
+    stopPlay();
+    setT(Number(els.flip.value) / 1000);
+    requestRender(true);
   });
-  els.zoomIn.addEventListener("click", () => { clearTimeout(viewTimer); canvasSel.transition().duration(reduceMotion.matches ? 0 : 250).call(zoom.scaleBy, 2); });
-  els.zoomOut.addEventListener("click", () => { clearTimeout(viewTimer); canvasSel.transition().duration(reduceMotion.matches ? 0 : 250).call(zoom.scaleBy, 0.5); });
+  els.play.addEventListener("click", () => {
+    if (state.t > 0.999) playFromStart(500);
+    else playTo(1, 4200);
+  });
 
   // ---------- buttons ----------
   els.circles.addEventListener("click", () => {
@@ -1089,10 +913,10 @@
     document.querySelectorAll("[data-i18n]").forEach((el) => { el.textContent = t(el.dataset.i18n); });
     document.querySelectorAll("[data-i18n-html]").forEach((el) => { el.innerHTML = t(el.dataset.i18nHtml); });
     document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => { el.placeholder = t(el.dataset.i18nPlaceholder); });
+    document.querySelectorAll("[data-i18n-aria]").forEach((el) => { el.setAttribute("aria-label", t(el.dataset.i18nAria)); });
     document.querySelectorAll("[data-lang]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.lang === lang)));
     els.zoomIn.setAttribute("aria-label", t("zoomIn"));
     els.zoomOut.setAttribute("aria-label", t("zoomOut"));
-    $("viewGroup").setAttribute("aria-label", t("viewLabel"));
     updateInfo();
     resize();
   }
@@ -1115,15 +939,14 @@
   async function init() {
     const fromUrl = readUrl();
     if (fromUrl) state.sel = fromUrl;
-    state.centre = antipode(state.sel.lon, state.sel.lat);
+    setT(reduceMotion.matches ? 1 : 0);
     window.addEventListener("resize", resize);
     resize();
     applyLang();
 
     world110 = toWorld(await d3.json("data/countries-110m.json"));
     render(false); updateCentreKind();
-    startGlobe();
-    reduceMotion.addEventListener?.("change", startGlobe);
+    if (!reduceMotion.matches) playTimer = setTimeout(() => playTo(1, 4200), 1200);
 
     const [w50, pl, cl] = await Promise.all([
       d3.json("data/countries-50m.json"),
@@ -1140,7 +963,7 @@
       if (m) Object.assign(state.sel, { ja: m[2], country: m[3] });
     }
     updateInfo();
-    render(false);
+    if (!anim) render(false);
     document.body.dataset.ready = "true";
   }
 
