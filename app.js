@@ -5,7 +5,7 @@
   const CLIP = 178.5; // degrees from the centre that are drawn
   const EARTH_R = 6371; // km
   const CIRCLE_KM = 500;
-  const DEFAULT = { lat: 42.92, lon: 143.2, name: "Obihiro", ja: "帯広市", country: "Japan" };
+  const DEFAULT = { lat: 51.45, lon: -2.58, name: "Bristol", ja: "ブリストル", country: "United Kingdom" };
   const REF_CITIES = [
     { name: "Tokyo", ja: "東京", lat: 35.687, lon: 139.749 },
     { name: "New York", ja: "ニューヨーク", lat: 40.752, lon: -73.982 },
@@ -44,7 +44,6 @@
       searchPlaceholder: "Change your town: search (e.g. New York)",
       useLocation: "Use where I am",
       circles: "Equal circles",
-      share: "Share",
       flipNormal: "Normal",
       flipInside: "Inside out",
       flipLabel: "Turn the map inside out",
@@ -66,7 +65,7 @@
       aboutP3: "At the left end of the slider the map is centred on your town, like an ordinary map. Moving the slider turns the centre away, until it reaches the point on the exact opposite side of the Earth. In this projection the point opposite the centre is stretched to infinite size, so your town can no longer be drawn as a point: it wraps around the whole map as its outer edge. The area within 500 km of it (the red band) then fills 89% of the map, and the rest of the world is squeezed into the middle.",
       notesH: "Notes",
       note1: "The map is cut at 178.5° from the centre. On the inside-out map, the small area within 1.5° (about 170 km) of your town cannot be drawn; the outer circle stands for it.",
-      note2: "Your location is used only inside your browser. It is not sent anywhere and not saved. It is added to a link only if you press Share and confirm.",
+      note2: "Your location is used only inside your browser. It is not sent anywhere and not saved. It is not written to the address bar.",
       note3: 'Data: <a href="https://www.naturalearthdata.com/">Natural Earth</a> (public domain): Admin 0 countries 1:110m and 1:50m (via <a href="https://github.com/topojson/world-atlas">world-atlas</a>), Populated Places 1:10m.',
       credit: 'Data: <a href="https://www.naturalearthdata.com/">Natural Earth</a>',
       ocean: "Ocean",
@@ -84,9 +83,6 @@
       geoDenied: "Location permission was not given.",
       geoFailed: "Could not get your location.",
       geoUsed: "Your location is used only in this browser. It is not sent or saved.",
-      shareConfirm: "This link contains your current location (rounded to about 1 km). Anyone who opens it will see where you are. Share it?",
-      copied: "Link copied.",
-      copyFailed: "Copy this link:",
       zoomIn: "Zoom in",
       zoomOut: "Zoom out",
       mapLabel: (n) => `Stereographic world map that turns inside out: ${n} becomes the outer edge of the world.`,
@@ -98,10 +94,9 @@
       yourTown: "あなたの町",
       townOnMap: (n) => `${n}（あなたの町）`,
       searchLabel: "町を検索",
-      searchPlaceholder: "あなたの町を変える：検索（例：札幌、New York）",
+      searchPlaceholder: "あなたの町を変える：検索（例：帯広、New York）",
       useLocation: "現在地にする",
       circles: "同じ大きさの円",
-      share: "共有",
       flipNormal: "ふつう",
       flipInside: "裏返し",
       flipLabel: "地図を裏返す",
@@ -123,7 +118,7 @@
       aboutP3: "スライダーの左端では、あなたの町を中心にしたふつうの地図です。スライダーを動かすと中心が移っていき、右端で地球のちょうど裏側の地点に着きます。この図法では中心の裏側の点が無限大に引き伸ばされるので、あなたの町は点として描けなくなり、地図全体を囲む外周になります。このとき、町から500 km以内（赤い帯）が地図の89%を占め、残りの世界は中央に押し込まれます。",
       notesH: "注記",
       note1: "中心から178.5°より外側は切り取っています。裏返した地図では、あなたの町から1.5°（約170 km）以内は描けないため、外周の円がその場所を表します。",
-      note2: "位置情報はブラウザの中だけで使い、どこにも送信せず、保存もしません。「共有」を押して確認したときだけ、リンクに含めます。",
+      note2: "位置情報はブラウザの中だけで使い、どこにも送信せず、保存もしません。アドレスバーにも書き込みません。",
       note3: '出典：<a href="https://www.naturalearthdata.com/">Natural Earth</a>（パブリックドメイン）。国境 1:110m・1:50m（<a href="https://github.com/topojson/world-atlas">world-atlas</a> 経由）、Populated Places 1:10m。',
       credit: '出典：<a href="https://www.naturalearthdata.com/">Natural Earth</a>',
       ocean: "海",
@@ -141,9 +136,6 @@
       geoDenied: "位置情報の利用が許可されませんでした。",
       geoFailed: "現在地を取得できませんでした。",
       geoUsed: "位置情報はこのブラウザの中だけで使い、送信・保存はしません。",
-      shareConfirm: "このリンクには現在地（約1 km単位に丸めたもの）が含まれます。開いた人にあなたの居場所がわかります。共有しますか？",
-      copied: "リンクをコピーしました。",
-      copyFailed: "このリンクをコピーしてください：",
       zoomIn: "拡大",
       zoomOut: "縮小",
       mapLabel: (n) => `裏返るステレオ図法の世界地図。${n}が世界の外周になります。`,
@@ -158,7 +150,7 @@
   const canvas = $("map");
   const ctx = canvas.getContext("2d");
   const els = {
-    q: $("q"), results: $("results"), geo: $("geo"), circles: $("circles"), share: $("share"),
+    q: $("q"), results: $("results"), geo: $("geo"), circles: $("circles"),
     zoomIn: $("zoomIn"), zoomOut: $("zoomOut"), status: $("status"), flip: $("flip"), play: $("play"),
     selName: $("selName"), selCoord: $("selCoord"), ctrCoord: $("ctrCoord"), ctrKind: $("ctrKind"),
     stretchBody: $("stretchBody"), circleLegend: $("circleLegend"), info: $("info"), infoToggle: $("infoToggle"),
@@ -727,26 +719,6 @@
     return { lat, lon, name, ja: "", country: "", source: "url" };
   }
 
-  function shareUrl() {
-    const s = state.sel;
-    const params = new URLSearchParams();
-    params.set("lat", s.lat.toFixed(2));
-    params.set("lon", s.lon.toFixed(2));
-    if (s.name && s.source !== "geo") params.set("name", s.name);
-    return `${location.origin}${location.pathname}?${params.toString()}`;
-  }
-
-  async function share() {
-    if (state.sel.source === "geo" && !window.confirm(t("shareConfirm"))) return;
-    const url = shareUrl();
-    try {
-      await navigator.clipboard.writeText(url);
-      setStatus(t("copied"));
-    } catch (e) {
-      window.prompt(t("copyFailed"), url);
-    }
-  }
-
   // ---------- search ----------
   function buildIndex() {
     searchIndex = places.map((p) => {
@@ -875,7 +847,6 @@
     els.circleLegend.hidden = !state.showCircles;
     render(false);
   });
-  els.share.addEventListener("click", share);
   els.geo.addEventListener("click", () => {
     if (!("geolocation" in navigator)) { setStatus(t("geoUnsupported")); return; }
     setStatus(t("geoWaiting"));

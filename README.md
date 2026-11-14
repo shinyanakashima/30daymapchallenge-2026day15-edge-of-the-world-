@@ -5,11 +5,11 @@
 
 **Live:** https://shinyanakashima.github.io/30daymapchallenge-2026day15-edge-of-the-world-/
 
-![Obihiro selected: the map is centred on its antipode in the South Atlantic, and Obihiro wraps around the outer edge](docs/screenshot.png)
+![Bristol turned inside out: Great Britain wraps around the outer edge and the rest of the world sits in the middle](docs/screenshot.png)
 
 Pick your town. At first it sits in the middle of an ordinary-looking map. Move the slider (or press **Play**) and the map turns inside out: the centre travels to the other side of the Earth, your town is pushed outward and stretched until it wraps around the whole map as its outer edge, and the rest of the world is squeezed into the middle.
 
-The map opens with Obihiro, Hokkaido (42.92°N, 143.20°E) and plays the turn once. When it is inside out, the centre is 42.92°S, 36.80°W in the South Atlantic Ocean, and Hokkaido and the sea around it fill most of the disc.
+The map opens with Bristol, UK (51.45°N, 2.58°W) and plays the turn once. When it is inside out, the centre is 51.45°S, 177.42°E in the Pacific Ocean south-east of New Zealand, and Great Britain, Ireland and the seas around them fill most of the disc.
 
 The page is in English and can be switched to Japanese (日本語).
 
@@ -22,7 +22,7 @@ The page is in English and can be switched to Japanese (日本語).
 - **Normal ↔ Inside out** slider: turn the map by hand. **Play** runs the turn again.
 - **Scroll / pinch** or **− / +** to zoom.
 - **Equal circles** shows circles that all have a 500 km radius on the ground, placed at increasing distance from the centre (the same idea as Tissot's indicatrix).
-- **Share** copies a link of the form `?lat=&lon=&name=`. If your town came from your location, you are asked to confirm first.
+- The address bar holds your town as `?lat=&lon=&name=`, so the page can be bookmarked or linked. A town that came from your location is not written there.
 - The red hatched band is everything within 500 km of your town. On the inside-out map it covers 89% of the map, but only 0.15% of the Earth's surface.
 - Country names appear where the map is enlarged enough to fit them.
 
@@ -40,7 +40,7 @@ The panel also shows the centre of the inside-out map and whether it is on land 
 ## Notes
 
 - **Clipping.** The map is cut at 178.5° from the centre (`clipAngle(178.5)`). The area within 1.5° (about 170 km) of your town is not drawn; the outer circle stands for it.
-- **Location.** Your location is used only inside your browser. It is not sent anywhere and not saved, and it is not written to the address bar. It goes into a link only if you press Share and confirm.
+- **Location.** Your location is used only inside your browser. It is not sent anywhere and not saved, and it is not written to the address bar.
 - Country borders use the 1:110m data while the map is moving and the 1:50m data when it stops.
 
 ## Data
