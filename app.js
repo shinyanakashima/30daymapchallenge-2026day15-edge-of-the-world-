@@ -74,6 +74,9 @@
       antipodeOf: (n) => `Antipode of ${n}`,
       mapCentre: "Map centre",
       through: "↕ 12,742 km straight through the Earth",
+      viewEdge: "Whole map",
+      viewCentre: "Around the centre",
+      viewLabel: "View",
       near: "near",
       geoUnsupported: "This browser cannot provide a location.",
       geoWaiting: "Getting your location…",
@@ -127,6 +130,9 @@
       antipodeOf: (n) => `${n}の裏側`,
       mapCentre: "地図の中心",
       through: "↕ 地球を貫いて一直線に 12,742 km",
+      viewEdge: "外周まで",
+      viewCentre: "中心付近",
+      viewLabel: "表示",
       near: "付近",
       geoUnsupported: "このブラウザでは位置情報を使えません。",
       geoWaiting: "現在地を取得しています…",
@@ -152,6 +158,7 @@
   const els = {
     q: $("q"), results: $("results"), geo: $("geo"), circles: $("circles"), share: $("share"),
     zoomIn: $("zoomIn"), zoomOut: $("zoomOut"), status: $("status"),
+    viewEdge: $("viewEdge"), viewCentre: $("viewCentre"),
     selName: $("selName"), selCoord: $("selCoord"), ctrCoord: $("ctrCoord"), ctrKind: $("ctrKind"),
     stretchBody: $("stretchBody"), circleLegend: $("circleLegend"), info: $("info"), infoToggle: $("infoToggle"),
   };
@@ -166,7 +173,7 @@
     myLoc: null, // [lon, lat], kept in memory only
   };
   let world110 = null, world50 = null; // { land, borders, countries }
-  let places = null, searchIndex = null;
+  let places = null, searchIndex = null, countryLabels = null;
   let width = 0, height = 0, dpr = 1, cx = 0, cy = 0, baseScale = 1;
   let anim = null;
 
@@ -302,9 +309,11 @@
       }
     }
 
-    drawRings();
-    drawCities();
-    drawCentre();
+    const boxes = [];
+    drawRings(boxes);
+    drawCities(boxes);
+    drawCentre(boxes);
+    if (!fast) drawCountryLabels(boxes);
     drawMyLocation();
     ctx.restore();
 
@@ -315,7 +324,7 @@
   // Circles at fixed ground distances from the selected place. Around the
   // centre of an azimuthal projection they are concentric screen circles.
   const RING_KM = [100, 200, 500, 1000, 2000, 5000, 10000, 15000];
-  function drawRings() {
+  function drawRings(boxes) {
     const diag = Math.hypot(width, height);
     const R = baseScale * state.k;
     let last = Infinity;
@@ -342,9 +351,38 @@
       ctx.lineWidth = 3; ctx.strokeStyle = "rgba(202, 217, 222, 0.9)"; ctx.setLineDash([]);
       ctx.strokeText(label, cx, y);
       ctx.fillStyle = "rgba(35, 49, 58, 0.9)"; ctx.fillText(label, cx, y);
+      const lw = ctx.measureText(label).width / 2 + 4;
+      boxes.push([cx - lw, y - 15, cx + lw, y + 2]);
       ctx.setLineDash([4, 4]); ctx.lineWidth = 1;
     }
     ctx.restore();
+  }
+
+  // Country names, shown where the local scale is large enough for them.
+  function drawCountryLabels(boxes) {
+    if (!countryLabels) return;
+    const s = baseScale * state.k;
+    const clipRad = ((CLIP - 1) * Math.PI) / 180;
+    const slack = width < 760 ? 0.8 : 1.2;
+    ctx.font = "600 10px system-ui, -apple-system, 'Segoe UI', 'Hiragino Sans', sans-serif";
+    ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    for (const [en, ja, lon, lat, minLabel] of countryLabels) {
+      const c = d3.geoDistance([lon, lat], state.centre);
+      if (c > clipRad) continue;
+      const local = s / (1 + Math.cos(c)); // px per radian at that point
+      const z = Math.log2((local * 2 * Math.PI) / 256); // equivalent web-map zoom
+      if (z < minLabel - slack) continue;
+      const p = projection([lon, lat]);
+      if (!p || p[0] < 0 || p[1] < 0 || p[0] > width || p[1] > height) continue;
+      const text = lang === "ja" && ja ? ja : en.toUpperCase();
+      const w = ctx.measureText(text).width + 6, h = 14;
+      const box = [p[0] - w / 2, p[1] - h / 2, p[0] + w / 2, p[1] + h / 2];
+      if (boxes.some((b) => box[0] < b[2] && box[2] > b[0] && box[1] < b[3] && box[3] > b[1])) continue;
+      boxes.push(box);
+      ctx.lineWidth = 3; ctx.strokeStyle = "rgba(244,240,230,0.8)";
+      ctx.strokeText(text, p[0], p[1]);
+      ctx.fillStyle = "rgba(92, 86, 72, 0.9)"; ctx.fillText(text, p[0], p[1]);
+    }
   }
 
   function haloText(text, x, y, color) {
@@ -354,13 +392,15 @@
   }
 
   // The map centre: same marker as the far end of the line in the globe inset.
-  function drawCentre() {
+  function drawCentre(boxes) {
     ctx.beginPath(); ctx.arc(cx, cy, 5, 0, 2 * Math.PI);
     ctx.fillStyle = "#fff"; ctx.fill();
     ctx.lineWidth = 2.5; ctx.strokeStyle = COLORS.edge; ctx.stroke();
     ctx.font = "600 11px system-ui, -apple-system, 'Segoe UI', 'Hiragino Sans', sans-serif";
     ctx.textBaseline = "middle"; ctx.textAlign = "start";
-    haloText(t("antipodeOf")(shortName()), cx + 9, cy - 9, COLORS.edge);
+    const label = t("antipodeOf")(shortName());
+    haloText(label, cx + 9, cy - 9, COLORS.edge);
+    boxes.push([cx - 8, cy - 18, cx + 12 + ctx.measureText(label).width, cy + 8]);
   }
 
   function drawMyLocation() {
@@ -385,7 +425,7 @@
     return (lang === "ja" ? s.ja : s.name) || t("theSelected");
   }
 
-  function drawCities() {
+  function drawCities(boxes) {
     const placed = [];
     ctx.font = "600 11px system-ui, -apple-system, 'Segoe UI', 'Hiragino Sans', sans-serif";
     ctx.textBaseline = "middle";
@@ -405,6 +445,7 @@
       ctx.lineWidth = 3; ctx.strokeStyle = "rgba(244,240,230,0.85)";
       ctx.strokeText(label, p[0] + 5, p[1]);
       ctx.fillText(label, p[0] + 5, p[1]);
+      boxes.push([p[0] - 4, p[1] - 8, p[0] + 8 + ctx.measureText(label).width, p[1] + 8]);
     }
   }
 
@@ -577,14 +618,35 @@
   }
 
   // ---------- selection ----------
+  // Zoom that fits the area within 100° of the centre (a bit more than a hemisphere).
+  const centreK = () => Math.tan(((CLIP / 2) * Math.PI) / 180) / Math.tan((50 * Math.PI) / 180);
+  let viewTimer = 0;
+
+  function zoomTo(k, ms) {
+    canvasSel.interrupt();
+    if (!ms || reduceMotion.matches) canvasSel.call(zoom.scaleTo, k);
+    else canvasSel.transition().duration(ms).ease(d3.easeCubicInOut).call(zoom.scaleTo, k);
+  }
+
+  function updateViewButtons() {
+    const kc = centreK();
+    els.viewEdge.setAttribute("aria-pressed", String(state.k < 1.05));
+    els.viewCentre.setAttribute("aria-pressed", String(Math.abs(Math.log(state.k / kc)) < 0.1));
+  }
+
+  // New place: turn the globe with the whole map in view, so the new edge is seen,
+  // then zoom in on the area around the centre.
   function select(sel, { animate = true, updateUrl = true } = {}) {
     state.sel = sel;
+    clearTimeout(viewTimer);
     const target = antipode(sel.lon, sel.lat);
     if (animate && !reduceMotion.matches) {
-      animateTo(target);
+      if (state.k > 1.05) zoomTo(1, 800);
+      animateTo(target, () => { viewTimer = setTimeout(() => zoomTo(centreK(), 1600), 450); });
     } else {
       stopAnim();
       state.centre = target;
+      zoomTo(centreK(), 0);
       render(false);
     }
     updateInfo();
@@ -593,17 +655,17 @@
 
   function stopAnim() { if (anim) { anim.stop(); anim = null; } }
 
-  function animateTo(target) {
+  function animateTo(target, onEnd) {
     stopAnim();
     const from = state.centre.slice();
     const dist = d3.geoDistance(from, target);
-    if (dist < 1e-6) { state.centre = target; render(false); return; }
+    if (dist < 1e-6) { state.centre = target; render(false); if (onEnd) onEnd(); return; }
     const interp = d3.geoInterpolate(from, target);
     const duration = 700 + 900 * (dist / Math.PI);
     anim = d3.timer((elapsed) => {
       const tt = Math.min(1, elapsed / duration);
       state.centre = interp(d3.easeCubicInOut(tt));
-      if (tt >= 1) { state.centre = target; stopAnim(); render(false); updateCentreKind(); }
+      if (tt >= 1) { state.centre = target; stopAnim(); render(false); updateCentreKind(); if (onEnd) onEnd(); }
       else render(true);
     });
   }
@@ -764,12 +826,14 @@
     .on("start", (e) => {
       prevT = e.transform; dragged = false;
       state.interacting = true;
+      if (e.sourceEvent) clearTimeout(viewTimer);
       if (e.sourceEvent && e.sourceEvent.type !== "wheel") canvas.classList.add("dragging");
     })
     .on("zoom", (e) => {
       const tr = e.transform;
       if (tr.k !== prevT.k) {
         state.k = tr.k;
+        updateViewButtons();
       } else if (e.sourceEvent) {
         const dx = tr.x - prevT.x, dy = tr.y - prevT.y;
         if (dx || dy) {
@@ -816,6 +880,8 @@
     select(selFromPoint(ll[0], ll[1], "click"));
   });
 
+  els.viewEdge.addEventListener("click", () => { clearTimeout(viewTimer); zoomTo(1, 900); });
+  els.viewCentre.addEventListener("click", () => { clearTimeout(viewTimer); zoomTo(centreK(), 900); });
   els.zoomIn.addEventListener("click", () => canvasSel.transition().duration(reduceMotion.matches ? 0 : 250).call(zoom.scaleBy, 2));
   els.zoomOut.addEventListener("click", () => canvasSel.transition().duration(reduceMotion.matches ? 0 : 250).call(zoom.scaleBy, 0.5));
 
@@ -866,6 +932,7 @@
     document.querySelectorAll("[data-lang]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.lang === lang)));
     els.zoomIn.setAttribute("aria-label", t("zoomIn"));
     els.zoomOut.setAttribute("aria-label", t("zoomOut"));
+    $("viewGroup").setAttribute("aria-label", t("viewLabel"));
     updateInfo();
     resize();
   }
@@ -898,10 +965,12 @@
     startGlobe();
     reduceMotion.addEventListener?.("change", startGlobe);
 
-    const [w50, pl] = await Promise.all([
+    const [w50, pl, cl] = await Promise.all([
       d3.json("data/countries-50m.json"),
       d3.json("data/places.json"),
+      d3.json("data/country-labels.json"),
     ]);
+    countryLabels = cl;
     world50 = toWorld(w50);
     places = pl;
     buildIndex();

@@ -62,6 +62,9 @@ button[aria-pressed="true"] { background: var(--ink); color: #fff; border-color:
 #results li[aria-selected="true"], #results li:hover { background: #f0ece2; }
 
 .buttons { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; align-items: center; }
+.view { display: flex; }
+.view button:first-child { border-radius: 6px 0 0 6px; }
+.view button:last-child { border-radius: 0 6px 6px 0; border-left: 0; }
 .zoom { margin-left: auto; display: flex; gap: 4px; }
 .zoom button { width: 32px; padding: 0; font-size: 16px; }
 .hint { margin: 8px 0 0; color: var(--muted); font-size: 12px; }

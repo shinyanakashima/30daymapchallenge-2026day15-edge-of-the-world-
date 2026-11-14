@@ -17,7 +17,9 @@ The page is in English and can be switched to Japanese (日本語).
 
 - **Search** a town by its English name. Major cities, and towns in Japan, can also be found by their Japanese name (e.g. 帯広).
 - **Click** the map to choose that point. The centre turns smoothly to the new antipode (switched instantly when the device asks for reduced motion).
-- **Drag** to move the centre. **Scroll / pinch** to zoom in on the crowded middle.
+- After a place is chosen, the map turns with the whole disc in view, so you can see the new edge, and then zooms in on the area around the centre. **Whole map / Around the centre** switch between the two views.
+- **Drag** to move the centre. **Scroll / pinch** to zoom.
+- Country names appear where the map is enlarged enough to fit them.
 - **Use my location** picks your current position from the browser and makes it the edge. A blue marker for it stays on the map when you choose other places, until the page is reloaded.
 - **Equal circles** shows circles that all have a 500 km radius on the ground, placed at increasing distance from the centre (the same idea as Tissot's indicatrix).
 - **Share** copies a link of the form `?lat=&lon=&name=`. If the place came from your location, you are asked to confirm first.
@@ -44,6 +46,7 @@ The corner panel also shows the selected place, the map centre (the antipode) an
 
 - [Natural Earth](https://www.naturalearthdata.com/) (public domain)
   - Admin 0 – Countries, 1:110m and 1:50m, as TopoJSON from [world-atlas](https://github.com/topojson/world-atlas) 2.0.2
+  - Admin 0 – Countries 1:50m: names and label points (`data/country-labels.json`, built with `scripts/build-country-labels.mjs`)
   - Populated Places, 1:10m (`data/places.json`, built with `scripts/build-places.mjs`)
 - Libraries: [D3](https://d3js.org/) 7.9.0, [topojson-client](https://github.com/topojson/topojson-client) 3.1.0 (ISC licence, files in `vendor/`)
 
@@ -55,11 +58,13 @@ No build step. Serve the folder with any static server, for example:
 python3 -m http.server 8000
 ```
 
-To rebuild the town list:
+To rebuild the town list and the country names:
 
 ```sh
 curl -LO https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_10m_populated_places.geojson
 node scripts/build-places.mjs ne_10m_populated_places.geojson
+curl -LO https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_50m_admin_0_countries.geojson
+node scripts/build-country-labels.mjs ne_50m_admin_0_countries.geojson
 ```
 
 Deployed to GitHub Pages by `.github/workflows/pages.yml` on every push to `main`.
