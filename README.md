@@ -25,21 +25,21 @@ The page is in English and can be switched to Japanese (日本語).
 - **Equal circles** shows circles that all have a 500 km radius on the ground, placed at increasing distance from the centre (the same idea as Tissot's indicatrix).
 - **Share** copies a link of the form `?lat=&lon=&name=`. If the place came from your location, you are asked to confirm first.
 
-The small globe in the corner panel shows the Earth from the side, with the selected place at the top and the map centre at the bottom, joined by a red line through the Earth's centre (12,742 km). The globe turns around that line. The map centre is marked with the same white-and-red dot on the main map.
+The small globe in the corner panel shows the Earth from the side, with your town at the top and the map centre at the bottom, joined by a red line through the Earth's centre (12,742 km). The globe turns around that line. The map centre is marked with the same white-and-red dot on the main map.
 
-The corner panel also shows the selected place, the map centre (the antipode) and whether it is on land or sea, and how much a set of major cities is enlarged.
+The corner panel also shows your town, the map centre (the antipode) and whether it is on land or sea, and how much a set of major cities is enlarged.
 
 ## The projection
 
 - Stereographic projection (`d3.geoStereographic`). It is conformal: angles are kept, so small shapes look right, but scale grows with distance from the centre.
 - On a Mercator map, scale grows away from the equator. On this map, scale grows away from the centre.
-- The centre is the antipode of the selected place: for a place at (lat, lon) the centre is (−lat, lon + 180°), set with `projection.rotate`.
-- At angular distance *c* from the centre, lengths are enlarged by 2 / (1 + cos *c*) and areas by the square of that. At *c* = 180° (the selected place itself) the enlargement is infinite, so the place cannot be drawn as a point and appears as the outer circle.
-- Dashed circles mark fixed ground distances from the selected place. Because they are centred on the projection centre, they appear as concentric circles.
+- The centre is the antipode of your town: for a place at (lat, lon) the centre is (−lat, lon + 180°), set with `projection.rotate`.
+- At angular distance *c* from the centre, lengths are enlarged by 2 / (1 + cos *c*) and areas by the square of that. At *c* = 180° (your town itself) the enlargement is infinite, so the place cannot be drawn as a point and appears as the outer circle.
+- Dashed circles mark fixed ground distances from your town. Because they are centred on the projection centre, they appear as concentric circles.
 
 ## Notes
 
-- **Clipping.** The map is cut at 178.5° from the centre (`clipAngle(178.5)`). The area within 1.5° (about 170 km) of the selected place is not drawn; the outer circle stands for it.
+- **Clipping.** The map is cut at 178.5° from the centre (`clipAngle(178.5)`). The area within 1.5° (about 170 km) of your town is not drawn; the outer circle stands for it.
 - **Location.** Your location is used only inside your browser. It is not sent anywhere and not saved, and it is not written to the address bar. It goes into a link only if you press Share and confirm.
 - Country borders use the 1:110m data while the map is moving and the 1:50m data when it stops.
 
