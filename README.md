@@ -18,11 +18,13 @@ The page is in English and can be switched to Japanese (日本語).
 - **Search** a town by its English name. Major cities, and towns in Japan, can also be found by their Japanese name (e.g. 帯広).
 - **Click** the map to choose that point. The centre turns smoothly to the new antipode (switched instantly when the device asks for reduced motion).
 - **Drag** to move the centre. **Scroll / pinch** to zoom in on the crowded middle.
-- **Use my location** picks your current position from the browser.
+- **Use my location** picks your current position from the browser and makes it the edge. A blue marker for it stays on the map when you choose other places, until the page is reloaded.
 - **Equal circles** shows circles that all have a 500 km radius on the ground, placed at increasing distance from the centre (the same idea as Tissot's indicatrix).
 - **Share** copies a link of the form `?lat=&lon=&name=`. If the place came from your location, you are asked to confirm first.
 
-The corner panel shows the selected place, the map centre (the antipode) and whether it is on land or sea, and how much a set of major cities is enlarged.
+The small globe in the corner panel shows the Earth from the side, with the selected place at the top and the map centre at the bottom, joined by a red line through the Earth's centre (12,742 km). The globe turns around that line. The map centre is marked with the same white-and-red dot on the main map.
+
+The corner panel also shows the selected place, the map centre (the antipode) and whether it is on land or sea, and how much a set of major cities is enlarged.
 
 ## The projection
 

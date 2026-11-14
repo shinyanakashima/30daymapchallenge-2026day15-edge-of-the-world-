@@ -48,14 +48,25 @@
 </header>
 
 <aside class="panel info" id="info">
-  <button type="button" class="info-toggle" id="infoToggle" aria-expanded="true" aria-controls="infoBody" data-i18n="details">Details</button>
-  <div id="infoBody">
+  <div class="link">
+    <canvas id="globe" aria-hidden="true"></canvas>
     <dl class="facts">
-      <dt data-i18n="selected">Selected place (the edge)</dt>
-      <dd><strong id="selName">—</strong><br><span id="selCoord" class="mono">—</span></dd>
-      <dt data-i18n="centre">Map centre (antipode)</dt>
-      <dd><span id="ctrCoord" class="mono">—</span><br><span id="ctrKind">—</span></dd>
+      <div class="end sel">
+        <dt data-i18n="selected">Selected place (the edge)</dt>
+        <dd><strong id="selName">—</strong> <span id="selCoord" class="mono">—</span></dd>
+      </div>
+      <p class="through" data-i18n="through">12,742 km straight through the Earth</p>
+      <div class="end ctr">
+        <dt data-i18n="centre">Map centre (antipode)</dt>
+        <dd><span id="ctrCoord" class="mono">—</span> <span id="ctrKind">—</span></dd>
+      </div>
     </dl>
+  </div>
+  <div class="mobile-row">
+    <button type="button" class="info-toggle" id="infoToggle" aria-expanded="true" aria-controls="infoBody" data-i18n="details">Details</button>
+    <button type="button" id="aboutBtn" aria-controls="about" data-i18n="about">About this map</button>
+  </div>
+  <div id="infoBody">
     <table class="stretch">
       <caption data-i18n="stretchCaption">Stretch at each city (relative to the centre)</caption>
       <thead><tr><th scope="col" data-i18n="city">City</th><th scope="col" data-i18n="distance">From centre</th><th scope="col" data-i18n="length">Length</th><th scope="col" data-i18n="area">Area</th></tr></thead>

@@ -28,6 +28,7 @@
     edgeText: "#f2d9d3",
     city: "#23313a",
     centre: "#23313a",
+    me: "#1f6fb2",
   };
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
@@ -70,6 +71,9 @@
       myLocation: "My location",
       pointName: "Selected point",
       theSelected: "the selected point",
+      antipodeOf: (n) => `Antipode of ${n}`,
+      mapCentre: "Map centre",
+      through: "↕ 12,742 km straight through the Earth",
       near: "near",
       geoUnsupported: "This browser cannot provide a location.",
       geoWaiting: "Getting your location…",
@@ -120,6 +124,9 @@
       myLocation: "現在地",
       pointName: "選んだ地点",
       theSelected: "選んだ地点",
+      antipodeOf: (n) => `${n}の裏側`,
+      mapCentre: "地図の中心",
+      through: "↕ 地球を貫いて一直線に 12,742 km",
       near: "付近",
       geoUnsupported: "このブラウザでは位置情報を使えません。",
       geoWaiting: "現在地を取得しています…",
@@ -156,6 +163,7 @@
     k: 1,
     showCircles: false,
     interacting: false,
+    myLoc: null, // [lon, lat], kept in memory only
   };
   let world110 = null, world50 = null; // { land, borders, countries }
   let places = null, searchIndex = null;
@@ -229,8 +237,10 @@
     const availW = width - left;
     let top = 0, bottom = height;
     if (width < 760) {
+      sizeGlobe();
+      const infoH = els.info.classList.contains("collapsed") ? els.info.offsetHeight : 150;
       top = document.querySelector(".top").getBoundingClientRect().bottom + 4;
-      bottom = height - 52;
+      bottom = height - infoH - 12;
       if (bottom - top < 200) { top = 0; bottom = height; }
     }
     cx = left + availW / 2;
@@ -238,6 +248,7 @@
     const margin = width < 760 ? 22 : 34;
     const radius = Math.max(60, Math.min(availW, bottom - top) / 2 - margin);
     baseScale = radius / Math.tan((CLIP / 2) * Math.PI / 180); // d3 stereographic: r = scale · tan(c / 2)
+    sizeGlobe();
     render();
   }
 
@@ -294,9 +305,11 @@
     drawRings();
     drawCities();
     drawCentre();
+    drawMyLocation();
     ctx.restore();
 
     drawEdge();
+    if (!globeTimer) drawGlobe();
   }
 
   // Circles at fixed ground distances from the selected place. Around the
@@ -312,7 +325,7 @@
     ctx.font = "11px system-ui, -apple-system, 'Segoe UI', 'Hiragino Sans', sans-serif";
     ctx.textBaseline = "bottom";
     ctx.textAlign = "center";
-    const name = state.sel.source === "geo" ? t("myLocation") : (lang === "ja" ? state.sel.ja : state.sel.name) || t("theSelected");
+    const name = shortName();
     let first = true;
     for (const km of RING_KM) {
       const c = Math.PI - km / EARTH_R; // angle from the centre
@@ -334,12 +347,42 @@
     ctx.restore();
   }
 
+  function haloText(text, x, y, color) {
+    ctx.lineWidth = 3; ctx.strokeStyle = "rgba(244,240,230,0.9)";
+    ctx.strokeText(text, x, y);
+    ctx.fillStyle = color; ctx.fillText(text, x, y);
+  }
+
+  // The map centre: same marker as the far end of the line in the globe inset.
   function drawCentre() {
-    ctx.strokeStyle = COLORS.centre; ctx.lineWidth = 1.2;
-    ctx.beginPath();
-    ctx.moveTo(cx - 6, cy); ctx.lineTo(cx + 6, cy);
-    ctx.moveTo(cx, cy - 6); ctx.lineTo(cx, cy + 6);
-    ctx.stroke();
+    ctx.beginPath(); ctx.arc(cx, cy, 5, 0, 2 * Math.PI);
+    ctx.fillStyle = "#fff"; ctx.fill();
+    ctx.lineWidth = 2.5; ctx.strokeStyle = COLORS.edge; ctx.stroke();
+    ctx.font = "600 11px system-ui, -apple-system, 'Segoe UI', 'Hiragino Sans', sans-serif";
+    ctx.textBaseline = "middle"; ctx.textAlign = "start";
+    haloText(t("antipodeOf")(shortName()), cx + 9, cy - 9, COLORS.edge);
+  }
+
+  function drawMyLocation() {
+    if (!state.myLoc) return;
+    if (d3.geoDistance(state.myLoc, state.centre) > ((CLIP - 0.3) * Math.PI) / 180) return; // on the edge
+    const p = projection(state.myLoc);
+    if (!p || p[0] < -20 || p[1] < -20 || p[0] > width + 20 || p[1] > height + 20) return;
+    ctx.beginPath(); ctx.arc(p[0], p[1], 9, 0, 2 * Math.PI);
+    ctx.fillStyle = "rgba(31, 111, 178, 0.18)"; ctx.fill();
+    ctx.beginPath(); ctx.arc(p[0], p[1], 5, 0, 2 * Math.PI);
+    ctx.fillStyle = COLORS.me; ctx.fill();
+    ctx.lineWidth = 2; ctx.strokeStyle = "#fff"; ctx.stroke();
+    ctx.font = "600 11px system-ui, -apple-system, 'Segoe UI', 'Hiragino Sans', sans-serif";
+    ctx.textBaseline = "middle"; ctx.textAlign = "start";
+    const nearCentre = Math.hypot(p[0] - cx, p[1] - cy) < 24;
+    haloText(t("myLocation"), p[0] + 10, nearCentre ? cy + 14 : p[1], COLORS.me);
+  }
+
+  function shortName() {
+    const s = state.sel;
+    if (s.source === "geo") return t("myLocation");
+    return (lang === "ja" ? s.ja : s.name) || t("theSelected");
   }
 
   function drawCities() {
@@ -406,6 +449,86 @@
     ctx.textAlign = "start";
   }
 
+  // ---------- globe inset: the selected place and the map centre joined through the Earth ----------
+  const globeCanvas = $("globe");
+  const gctx = globeCanvas.getContext("2d");
+  const globeProj = d3.geoOrthographic().clipAngle(90).precision(0.5);
+  const globePath = d3.geoPath(globeProj, gctx);
+  let globeW = 0, globeH = 0, globeR = 0, globeSpin = 0, globeTimer = null;
+
+  function sizeGlobe() {
+    const small = width < 760;
+    globeR = small ? 40 : 50;
+    globeW = globeR * 2 + 8;
+    globeH = globeR * 2 + 14;
+    globeCanvas.width = Math.round(globeW * dpr);
+    globeCanvas.height = Math.round(globeH * dpr);
+    globeCanvas.style.width = globeW + "px";
+    globeCanvas.style.height = globeH + "px";
+  }
+
+  function drawGlobe() {
+    if (!globeW) return;
+    const P = antipode(state.centre[0], state.centre[1]); // selected place, follows the animation
+    const gx = globeW / 2, gy = globeH / 2;
+    // Look at the Earth from the side: the view centre is 90° away from P, so P and
+    // its antipode sit on the outline, top and bottom. Spinning moves the view
+    // centre around the P–antipode axis.
+    const toPole = d3.geoRotation([-P[0], 90 - P[1]]);
+    const Q = toPole.invert([globeSpin, 0]);
+    globeProj.scale(globeR).translate([gx, gy]).rotate([-Q[0], -Q[1], 0]);
+    let p = globeProj(P);
+    const a = (Math.atan2(p[1] - gy, p[0] - gx) * 180) / Math.PI;
+    globeProj.rotate([-Q[0], -Q[1], -(a + 90)]);
+    p = globeProj(P);
+    if (p[1] > gy) globeProj.rotate([-Q[0], -Q[1], a + 90]);
+
+    const c = gctx;
+    c.setTransform(dpr, 0, 0, dpr, 0, 0);
+    c.clearRect(0, 0, globeW, globeH);
+    c.beginPath(); globePath({ type: "Sphere" });
+    c.fillStyle = COLORS.ocean; c.fill();
+    const w = world110 || world50;
+    if (w) {
+      c.beginPath(); globePath(w.land);
+      c.fillStyle = COLORS.land; c.fill();
+      c.lineWidth = 0.5; c.strokeStyle = COLORS.border; c.stroke();
+    }
+    // cut through the Earth
+    const top = gy - globeR, bottom = gy + globeR;
+    c.beginPath(); c.ellipse(gx, gy, globeR * 0.2, globeR, 0, 0, 2 * Math.PI);
+    const grad = c.createRadialGradient(gx, gy, 0, gx, gy, globeR);
+    grad.addColorStop(0, "#e9b07a"); grad.addColorStop(0.55, "#a8553c"); grad.addColorStop(1, "#5b3128");
+    c.fillStyle = grad; c.globalAlpha = 0.9; c.fill(); c.globalAlpha = 1;
+    c.beginPath(); globePath({ type: "Sphere" });
+    c.lineWidth = 1; c.strokeStyle = "rgba(255,255,255,0.55)"; c.stroke();
+
+    if (state.myLoc && d3.geoDistance(state.myLoc, Q) < Math.PI / 2) {
+      const m = globeProj(state.myLoc);
+      c.beginPath(); c.arc(m[0], m[1], 3, 0, 2 * Math.PI);
+      c.fillStyle = COLORS.me; c.fill(); c.lineWidth = 1; c.strokeStyle = "#fff"; c.stroke();
+    }
+
+    c.beginPath(); c.moveTo(gx, top); c.lineTo(gx, bottom);
+    c.lineWidth = 2.5; c.strokeStyle = COLORS.edge; c.stroke();
+    c.beginPath(); c.arc(gx, gy, 2, 0, 2 * Math.PI); c.fillStyle = "#fff"; c.fill();
+    c.beginPath(); c.arc(gx, top, 5, 0, 2 * Math.PI); c.fillStyle = COLORS.edge; c.fill();
+    c.beginPath(); c.arc(gx, bottom, 5, 0, 2 * Math.PI); c.fillStyle = "#fff"; c.fill();
+    c.lineWidth = 2.5; c.strokeStyle = COLORS.edge; c.stroke();
+
+  }
+
+  function startGlobe() {
+    if (globeTimer) { globeTimer.stop(); globeTimer = null; }
+    if (reduceMotion.matches) { drawGlobe(); return; }
+    let last = 0;
+    globeTimer = d3.timer((elapsed) => {
+      globeSpin = (globeSpin + ((elapsed - last) / 1000) * 12) % 360; // 12°/s
+      last = elapsed;
+      drawGlobe();
+    });
+  }
+
   // ---------- info panel ----------
   function updateInfo() {
     const s = state.sel;
@@ -422,6 +545,11 @@
       const len = 2 / (1 + Math.cos(d));
       return { label: lang === "ja" ? c.ja : c.name, d, len, area: len * len };
     });
+    if (state.myLoc && s.source !== "geo") {
+      const d = d3.geoDistance(state.myLoc, centre);
+      const len = 2 / (1 + Math.cos(d));
+      rows.push({ label: t("myLocation"), d, len, area: len * len, me: true });
+    }
     const clipRad = (CLIP * Math.PI) / 180;
     const visible = rows.filter((r) => r.d <= clipRad);
     visible.sort((a, b) => a.d - b.d);
@@ -429,6 +557,7 @@
     els.stretchBody.replaceChildren(...visible.map((r) => {
       const tr = document.createElement("tr");
       if (r.edge) tr.className = "edge";
+      if (r.me) tr.className = "me";
       const km = Math.round((r.d * EARTH_R) / 100) * 100;
       const cells = [r.label, `${km.toLocaleString("en-US")} km`,
         r.edge ? "∞" : fmtFactor(r.len),
@@ -705,15 +834,22 @@
       (pos) => {
         const { latitude, longitude } = pos.coords;
         setStatus(t("geoUsed"));
+        state.myLoc = [longitude, latitude];
         select({ lat: latitude, lon: longitude, name: "", ja: "", country: "", source: "geo" });
       },
       (err) => setStatus(err.code === 1 ? t("geoDenied") : t("geoFailed")),
       { enableHighAccuracy: false, timeout: 15000, maximumAge: 300000 }
     );
   });
+  $("aboutBtn").addEventListener("click", () => {
+    const about = $("about");
+    about.open = !about.open;
+    if (about.open) about.querySelector("summary").focus();
+  });
   els.infoToggle.addEventListener("click", () => {
     const collapsed = els.info.classList.toggle("collapsed");
     els.infoToggle.setAttribute("aria-expanded", String(!collapsed));
+    if (collapsed) resize();
   });
   if (window.innerWidth < 760) {
     els.info.classList.add("collapsed");
@@ -759,6 +895,8 @@
 
     world110 = toWorld(await d3.json("data/countries-110m.json"));
     render(false); updateCentreKind();
+    startGlobe();
+    reduceMotion.addEventListener?.("change", startGlobe);
 
     const [w50, pl] = await Promise.all([
       d3.json("data/countries-50m.json"),
