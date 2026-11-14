@@ -39,6 +39,12 @@
       title: "Your town, the edge of the world",
       lede: "Your town goes all the way around the outside. The other side of the Earth is in the middle.",
       yourTown: "Your town",
+      realign: "Put back on the edge",
+      moved: "You moved the map, so the edge is now another place. The red dot is your town.",
+      centreAligned: "Map centre (the other side of your town)",
+      centreMoved: "Map centre (moved)",
+      edgePoint: "the point on the edge",
+      townOnMap: (n) => `${n} (your town)`,
       searchLabel: "Search for a town",
       searchPlaceholder: "Change your town: search (e.g. New York)",
       useLocation: "Use where I am",
@@ -99,6 +105,12 @@
       title: "あなたの町が、世界の果てになる",
       lede: "あなたの町が地図の外側をぐるりと囲み、地球の裏側が真ん中に来ます。",
       yourTown: "あなたの町",
+      realign: "外周に戻す",
+      moved: "地図を動かしたので、今の外周はあなたの町ではありません。赤い点があなたの町です。",
+      centreAligned: "地図の中心（あなたの町の裏側）",
+      centreMoved: "地図の中心（動かした位置）",
+      edgePoint: "外周の地点",
+      townOnMap: (n) => `${n}（あなたの町）`,
       searchLabel: "町を検索",
       searchPlaceholder: "あなたの町を変える：検索（例：札幌、New York）",
       useLocation: "現在地にする",
@@ -166,7 +178,7 @@
   const els = {
     q: $("q"), results: $("results"), geo: $("geo"), circles: $("circles"), share: $("share"),
     zoomIn: $("zoomIn"), zoomOut: $("zoomOut"), status: $("status"),
-    viewEdge: $("viewEdge"), viewCentre: $("viewCentre"),
+    viewEdge: $("viewEdge"), viewCentre: $("viewCentre"), ctrLabel: document.querySelector(".facts .ctr dt"),
     selName: $("selName"), selCoord: $("selCoord"), ctrCoord: $("ctrCoord"), ctrKind: $("ctrKind"),
     stretchBody: $("stretchBody"), circleLegend: $("circleLegend"), info: $("info"), infoToggle: $("infoToggle"),
   };
@@ -179,6 +191,7 @@
     showCircles: false,
     interacting: false,
     myLoc: null, // [lon, lat], kept in memory only
+    edgeName: null, // name of the place at the edge when the map has been moved
   };
   let world110 = null, world50 = null; // { land, borders, countries }
   let places = null, searchIndex = null, countryLabels = null;
@@ -363,6 +376,7 @@
   }
 
   function drawShareBand() {
+    if (!aligned()) return;
     const rEdge = edgeRadius(), r = rEdge * shareNumbers().rel;
     if (r > Math.hypot(width, height)) return;
     ctx.beginPath();
@@ -374,6 +388,7 @@
   }
 
   function drawShareCaption() {
+    if (!aligned()) return;
     const rEdge = edgeRadius(), n = shareNumbers(), r = rEdge * n.rel;
     const y = cy + (r + rEdge) / 2;
     if (width < 760 || r > Math.hypot(width, height) || y > height - 10) return; // phones: shown in the panel
@@ -392,6 +407,7 @@
   // centre of an azimuthal projection they are concentric screen circles.
   const RING_KM = [100, 200, 500, 1000, 2000, 5000, 10000, 15000];
   function drawRings(boxes) {
+    if (!aligned()) return;
     const diag = Math.hypot(width, height);
     const R = baseScale * state.k;
     let last = Infinity;
@@ -461,6 +477,27 @@
 
   // The map centre: same marker as the far end of the line in the globe inset.
   function drawCentre(boxes) {
+    const isAligned = aligned();
+    let x = cx, y = cy;
+    if (!isAligned) {
+      const a = antipode(state.sel.lon, state.sel.lat);
+      if (d3.geoDistance(a, state.centre) > ((CLIP - 0.5) * Math.PI) / 180) return;
+      [x, y] = projection(a);
+      if (x < -50 || y < -50 || x > width + 50 || y > height + 50) return;
+      // your town itself is now drawable
+      const tpos = projection([state.sel.lon, state.sel.lat]);
+      if (d3.geoDistance([state.sel.lon, state.sel.lat], state.centre) < ((CLIP - 0.3) * Math.PI) / 180 && tpos) {
+        ctx.beginPath(); ctx.arc(tpos[0], tpos[1], 6, 0, 2 * Math.PI);
+        ctx.fillStyle = COLORS.edge; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = "#fff"; ctx.stroke();
+        ctx.font = "700 12px system-ui, -apple-system, 'Segoe UI', 'Hiragino Sans', sans-serif";
+        ctx.textBaseline = "middle"; ctx.textAlign = "start";
+        haloText(t("townOnMap")(shortName()), tpos[0] + 10, tpos[1], COLORS.edge);
+      }
+    }
+    return drawAntipodeMarker(boxes, x, y);
+  }
+
+  function drawAntipodeMarker(boxes, cx, cy) {
     ctx.beginPath(); ctx.arc(cx, cy, 5, 0, 2 * Math.PI);
     ctx.fillStyle = "#fff"; ctx.fill();
     ctx.lineWidth = 2.5; ctx.strokeStyle = COLORS.edge; ctx.stroke();
@@ -488,6 +525,17 @@
     ctx.textBaseline = "middle"; ctx.textAlign = "start";
     const nearCentre = Math.hypot(p[0] - cx, p[1] - cy) < 24;
     haloText(t("myLocation"), p[0] + 10, nearCentre ? cy + 14 : p[1], COLORS.me);
+  }
+
+  // True when the map centre is the other side of your town, i.e. your town is the edge.
+  function aligned() {
+    if (anim) return true;
+    return d3.geoDistance(antipode(state.sel.lon, state.sel.lat), state.centre) < 0.003;
+  }
+  function edgeName() {
+    const e = antipode(state.centre[0], state.centre[1]);
+    if (state.edgeName) return lang === "ja" && state.edgeName.ja ? state.edgeName.ja : state.edgeName.en;
+    return fmtCoord(e[1], e[0]);
   }
 
   function shortName() {
@@ -524,14 +572,15 @@
     const r = baseScale * state.k * Math.tan((CLIP / 2) * Math.PI / 180);
     const diag = Math.hypot(width, height);
     ctx.beginPath(); ctx.arc(cx, cy, r, 0, 2 * Math.PI);
-    ctx.lineWidth = 3; ctx.strokeStyle = COLORS.edge; ctx.stroke();
+    ctx.lineWidth = 3; ctx.strokeStyle = aligned() ? COLORS.edge : "#7d8a90"; ctx.stroke();
 
     if (r > diag * 3) return; // edge far off screen
-    const label = displayName(state.sel);
+    const isAligned = aligned();
+    const label = isAligned ? displayName(state.sel) : edgeName();
     const unit = (lang === "ja" ? label : label.toUpperCase()) + (lang === "ja" ? "　·　" : "  ·  ");
     const fontSize = width < 760 ? 12 : 14;
     ctx.font = `600 ${fontSize}px system-ui, -apple-system, 'Segoe UI', 'Hiragino Sans', sans-serif`;
-    ctx.fillStyle = COLORS.edgeText;
+    ctx.fillStyle = isAligned ? COLORS.edgeText : "#8d999e";
     ctx.textBaseline = "middle";
     ctx.textAlign = "center";
     const tr = r + fontSize * 0.95;
@@ -581,7 +630,7 @@
 
   function drawGlobe() {
     if (!globeW) return;
-    const P = antipode(state.centre[0], state.centre[1]); // selected place, follows the animation
+    const P = anim ? antipode(state.centre[0], state.centre[1]) : [state.sel.lon, state.sel.lat]; // your town
     const gx = globeW / 2, gy = globeH / 2;
     // Look at the Earth from the side: the view centre is 90° away from P, so P and
     // its antipode sit on the outline, top and bottom. Spinning moves the view
@@ -644,8 +693,10 @@
   // ---------- info panel ----------
   function updateInfo() {
     const s = state.sel;
-    const centre = antipode(s.lon, s.lat);
+    const isAligned = aligned() || !!anim;
+    const centre = anim ? antipode(s.lon, s.lat) : state.centre;
     const name = displayName(s);
+    setMovedUI(isAligned);
     const country = s.source === "geo" ? "" : (s.country ? ` (${s.country})` : "");
     els.selName.textContent = name + country;
     $("townName").textContent = name;
@@ -666,11 +717,18 @@
     const clipRad = (CLIP * Math.PI) / 180;
     const visible = rows.filter((r) => r.d <= clipRad);
     visible.sort((a, b) => a.d - b.d);
-    visible.push({ label: `${name} (${t("edgeRow")})`, d: Math.PI, len: Infinity, area: Infinity, edge: true });
+    if (!isAligned) {
+      const d = d3.geoDistance([s.lon, s.lat], centre);
+      const len = 2 / (1 + Math.cos(d));
+      if (d <= clipRad) visible.push({ label: name, d, len, area: len * len, town: true });
+      visible.sort((a, b) => a.d - b.d);
+    }
+    visible.push({ label: `${isAligned ? name : edgeName()} (${t("edgeRow")})`, d: Math.PI, len: Infinity, area: Infinity, edge: true });
     els.stretchBody.replaceChildren(...visible.map((r) => {
       const tr = document.createElement("tr");
       if (r.edge) tr.className = "edge";
       if (r.me) tr.className = "me";
+      if (r.town) tr.className = "edge";
       const km = Math.round((r.d * EARTH_R) / 100) * 100;
       const cells = [r.label, `${km.toLocaleString("en-US")} km`,
         r.edge ? "∞" : fmtFactor(r.len),
@@ -687,7 +745,7 @@
   function updateCentreKind() {
     const w = world50 || world110;
     if (!w) { els.ctrKind.textContent = "—"; return; }
-    const centre = antipode(state.sel.lon, state.sel.lat);
+    const centre = anim ? antipode(state.sel.lon, state.sel.lat) : state.centre;
     const hit = w.countries.find((f) => d3.geoContains(f, centre));
     els.ctrKind.textContent = hit ? `${t("land")} — ${hit.properties.name}` : t("ocean");
   }
@@ -713,6 +771,7 @@
   // then zoom in on the area around the centre.
   function select(sel, { animate = true, updateUrl = true } = {}) {
     state.sel = sel;
+    state.edgeName = null;
     clearTimeout(viewTimer);
     const target = antipode(sel.lon, sel.lat);
     if (animate && !reduceMotion.matches) {
@@ -924,7 +983,7 @@
           const lon = wrapLon(state.centre[0] - dx * degPerPx);
           const lat = Math.max(-89.9, Math.min(89.9, state.centre[1] + dy * degPerPx));
           state.centre = [lon, lat];
-          state.sel = { lat: -lat, lon: wrapLon(lon + 180), name: "", ja: "", country: "", source: "drag" };
+          state.edgeName = null;
           updateInfoLight();
         }
       }
@@ -935,20 +994,31 @@
       state.interacting = false;
       canvas.classList.remove("dragging");
       if (dragged) {
-        const s = state.sel;
-        state.sel = selFromPoint(s.lon, s.lat, "drag");
+        const e = antipode(state.centre[0], state.centre[1]);
+        const p = nearestPlace(e[0], e[1], 60);
+        state.edgeName = p ? { en: `Near ${p[0]}`, ja: `${p[2] || p[0]}${STR.ja.near}` } : null;
         updateInfo();
-        writeUrl();
       }
       requestRender(false);
     });
   canvasSel.call(zoom).on("dblclick.zoom", null);
 
+  function setMovedUI(isAligned) {
+    els.ctrLabel.textContent = isAligned ? t("centreAligned") : t("centreMoved");
+    document.querySelector(".facts .sel dt").textContent = isAligned ? t("selected") : t("yourTown");
+    const lede = $("lede");
+    lede.textContent = isAligned ? t("lede") : t("moved");
+    lede.classList.toggle("is-moved", !isAligned);
+    if ($("realign").hidden === isAligned) return;
+    $("realign").hidden = isAligned;
+    $("shareNote").hidden = !isAligned;
+    if (width < 760) resize(); // the bottom panel changed height
+  }
+
   function updateInfoLight() {
-    els.selName.textContent = t("pointName");
-    $("townName").textContent = fmtCoord(state.sel.lat, state.sel.lon);
-    els.selCoord.textContent = fmtCoord(state.sel.lat, state.sel.lon);
     els.ctrCoord.textContent = fmtCoord(state.centre[1], state.centre[0]);
+    const isAligned = aligned();
+    setMovedUI(isAligned);
   }
 
   canvas.addEventListener("click", (e) => {
@@ -964,6 +1034,13 @@
 
   els.viewEdge.addEventListener("click", () => { clearTimeout(viewTimer); zoomTo(1, 900); });
   els.viewCentre.addEventListener("click", () => { clearTimeout(viewTimer); zoomTo(centreK(), 900); });
+  $("realign").addEventListener("click", () => {
+    clearTimeout(viewTimer);
+    state.edgeName = null;
+    if (reduceMotion.matches) { state.centre = antipode(state.sel.lon, state.sel.lat); render(false); updateInfo(); }
+    else animateTo(antipode(state.sel.lon, state.sel.lat), () => updateInfo());
+    updateInfoLight();
+  });
   els.zoomIn.addEventListener("click", () => { clearTimeout(viewTimer); canvasSel.transition().duration(reduceMotion.matches ? 0 : 250).call(zoom.scaleBy, 2); });
   els.zoomOut.addEventListener("click", () => { clearTimeout(viewTimer); canvasSel.transition().duration(reduceMotion.matches ? 0 : 250).call(zoom.scaleBy, 0.5); });
 

@@ -19,7 +19,7 @@ The page is in English and can be switched to Japanese (日本語).
 - **Click** the map: that point becomes your town. The centre turns smoothly to the new antipode (switched instantly when the device asks for reduced motion).
 - After a place is chosen, the map turns with the whole disc in view, zooms in on the area around the centre to show where it is, and then returns to the whole map. **Whole map / Around the centre** switch between the two views.
 - The red hatched band is everything within 500 km of your town. It covers 89% of the map, but only 0.15% of the Earth's surface.
-- **Drag** to move the centre. **Scroll / pinch** to zoom.
+- **Drag** to move the map. Your town stays the same: the marker for its other side moves with the map, your town appears as a red dot, and the edge turns grey because it is now another place. **Put back on the edge** turns the map back. **Scroll / pinch** to zoom.
 - Country names appear where the map is enlarged enough to fit them.
 - **Use where I am** makes your current position (from the browser) your town. A blue marker for it stays on the map when you choose other places, until the page is reloaded.
 - **Equal circles** shows circles that all have a 500 km radius on the ground, placed at increasing distance from the centre (the same idea as Tissot's indicatrix).

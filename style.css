@@ -51,6 +51,8 @@ button[aria-pressed="true"] { background: var(--ink); color: #fff; border-color:
 .town { display: flex; align-items: baseline; gap: 8px; margin-bottom: 6px; padding-left: 14px; position: relative; }
 .town::before { content: ""; position: absolute; left: 0; top: 50%; margin-top: -4px; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
 .town-label { font-size: 11px; color: var(--muted); flex-shrink: 0; }
+#realign { margin-left: auto; flex-shrink: 0; min-height: 26px; padding: 2px 9px; font-size: 11px; border-color: var(--accent); color: var(--accent); }
+.lede.is-moved { color: var(--accent); }
 #townName { font-size: 17px; color: var(--accent); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .search { position: relative; }
 #q {
@@ -78,6 +80,7 @@ button[aria-pressed="true"] { background: var(--ink); color: #fff; border-color:
 
 .info { left: 12px; bottom: 12px; width: 360px; max-width: calc(100vw - 24px); padding: 10px 14px 12px; z-index: 2; max-height: calc(100vh - 300px); overflow-y: auto; }
 .mobile-row { display: none; }
+.share-note[hidden] { display: none !important; }
 .share-note { display: none; margin: 0 0 6px; font-size: 12px; font-weight: 600; color: var(--accent); }
 .link { display: flex; gap: 10px; align-items: stretch; margin-bottom: 8px; }
 #globe { flex-shrink: 0; display: block; }
@@ -97,6 +100,8 @@ button[aria-pressed="true"] { background: var(--ink); color: #fff; border-color:
 .stretch caption { text-align: left; font-size: 11px; color: var(--muted); padding-bottom: 2px; }
 .stretch th { text-align: right; font-weight: 600; font-size: 11px; border-bottom: 1px solid var(--line); padding: 2px 4px; }
 .stretch th:first-child, .stretch td:first-child { text-align: left; padding-left: 0; }
+.stretch td, .stretch th { white-space: nowrap; }
+.stretch td:first-child { white-space: normal; }
 .stretch td { text-align: right; padding: 2px 4px; border-bottom: 1px solid #ebe7dd; }
 .stretch tr.edge td { color: var(--accent); font-weight: 600; }
 .formula, .legend { margin: 6px 0 0; font-size: 11px; color: var(--muted); }

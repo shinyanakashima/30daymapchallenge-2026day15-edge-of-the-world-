@@ -26,11 +26,12 @@
     </div>
   </div>
 
-  <p class="lede" data-i18n="lede">Your town goes all the way around the outside. The other side of the Earth is in the middle.</p>
+  <p class="lede" id="lede">Your town goes all the way around the outside. The other side of the Earth is in the middle.</p>
 
   <div class="town">
     <span class="town-label" data-i18n="yourTown">Your town</span>
     <strong id="townName">Obihiro</strong>
+    <button type="button" id="realign" hidden data-i18n="realign">Put back on the edge</button>
   </div>
 
   <div class="search">
@@ -63,12 +64,12 @@
     <canvas id="globe" aria-hidden="true"></canvas>
     <dl class="facts">
       <div class="end sel">
-        <dt data-i18n="selected">Selected place (the edge)</dt>
+        <dt>Selected place (the edge)</dt>
         <dd><strong id="selName">—</strong> <span id="selCoord" class="mono">—</span></dd>
       </div>
       <p class="through" data-i18n="through">12,742 km straight through the Earth</p>
       <div class="end ctr">
-        <dt data-i18n="centre">Map centre (antipode)</dt>
+        <dt>Map centre (the other side of your town)</dt>
         <dd><span id="ctrCoord" class="mono">—</span> <span id="ctrKind">—</span></dd>
       </div>
     </dl>
