@@ -48,7 +48,7 @@
       flipInside: "Inside out",
       flipLabel: "Turn the map inside out",
       play: "Play",
-      hint: "Click the map: that point becomes your town. Scroll or pinch to zoom.",
+      hint: "Click the map: that point becomes your town. Scroll or pinch to zoom. Play shows the turn again.",
       details: "Details",
       centreLabel: "Centre of the inside-out map",
       stretchCaption: "Stretch on the inside-out map (relative to the centre)",
@@ -101,7 +101,7 @@
       flipInside: "裏返し",
       flipLabel: "地図を裏返す",
       play: "再生",
-      hint: "地図をクリックすると、その地点があなたの町になります。スクロールやピンチで拡大縮小。",
+      hint: "地図をクリックすると、その地点があなたの町になります。スクロールやピンチで拡大縮小。「再生」で裏返す様子をもう一度見られます。",
       details: "詳細",
       centreLabel: "裏返した地図の中心",
       stretchCaption: "裏返した地図での伸び率（中心を1とする）",
@@ -666,12 +666,27 @@
   }
 
   // ---------- selection ----------
-  // A new town: show it as an ordinary map for a moment, then turn it inside out.
+  // A new town keeps the current view: same slider position, same zoom. The map
+  // only turns to the new town. (Play shows the ordinary-to-inside-out turn again.)
   function select(sel, { updateUrl = true } = {}) {
+    stopPlay();
+    const from = state.centre.slice();
     state.sel = sel;
-    canvasSel.interrupt();
-    canvasSel.call(zoom.transform, d3.zoomIdentity); // drop any zoom the viewer added
-    playFromStart(700);
+    const to = centreFor(sel, state.t);
+    const dist = d3.geoDistance(from, to);
+    if (reduceMotion.matches || dist < 1e-6) {
+      state.centre = to;
+      render(false);
+    } else {
+      const interp = d3.geoInterpolate(from, to);
+      const ms = 600 + 700 * (dist / Math.PI);
+      anim = d3.timer((elapsed) => {
+        const u = Math.min(1, elapsed / ms);
+        state.centre = interp(d3.easeCubicInOut(u));
+        if (u >= 1) { anim.stop(); anim = null; state.centre = to; render(false); }
+        else render(true);
+      });
+    }
     updateInfo();
     if (updateUrl) writeUrl();
   }

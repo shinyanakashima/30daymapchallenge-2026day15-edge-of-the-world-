@@ -18,7 +18,7 @@ The page is in English and can be switched to Japanese (日本語).
 - **Your town** is shown at the top of the panel. Change it by searching a town by its English name. Major cities, and towns in Japan, can also be found by their Japanese name (e.g. 帯広).
 - **Click** the map: that point becomes your town.
 - **Use where I am** makes your current position (from the browser) your town. A blue marker for it stays on the map when you choose other towns, until the page is reloaded.
-- After a town is chosen, the map shows it as an ordinary map for a moment and then turns inside out. With reduced motion turned on in the device settings, it goes straight to the inside-out map.
+- Choosing another town keeps the current slider position and zoom; the map just turns to the new town. When the page opens it shows the turn from an ordinary map to the inside-out map once. With reduced motion turned on in the device settings, it goes straight to the inside-out map.
 - **Normal ↔ Inside out** slider: turn the map by hand. **Play** runs the turn again.
 - **Scroll / pinch** or **− / +** to zoom.
 - **Equal circles** shows circles that all have a 500 km radius on the ground, placed at increasing distance from the centre (the same idea as Tissot's indicatrix).
