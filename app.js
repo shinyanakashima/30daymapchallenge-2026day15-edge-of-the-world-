@@ -37,15 +37,17 @@
     en: {
       kicker: "#30DayMapChallenge 2026 · Day 15 · Inside out",
       title: "Your town, the edge of the world",
+      lede: "Your town goes all the way around the outside. The other side of the Earth is in the middle.",
+      yourTown: "Your town",
       searchLabel: "Search for a town",
-      searchPlaceholder: "Search a town (e.g. Obihiro, New York)",
-      useLocation: "Use my location",
+      searchPlaceholder: "Change your town: search (e.g. New York)",
+      useLocation: "Use where I am",
       circles: "Equal circles",
       share: "Share",
-      hint: "Click the map to choose a place. Drag to move the centre. Scroll or pinch to zoom.",
+      hint: "You can also click the map: that point becomes your town. Drag to move, scroll or pinch to zoom.",
       details: "Details",
-      selected: "Selected place (the edge)",
-      centre: "Map centre (antipode)",
+      selected: "Your town (all around the edge)",
+      centre: "Map centre (the other side of the Earth)",
       stretchCaption: "Stretch at each city (relative to the centre)",
       city: "City",
       distance: "From centre",
@@ -68,10 +70,11 @@
       edgeRow: "the edge",
       infinite: "∞",
       noResults: "No matching town",
-      myLocation: "My location",
-      pointName: "Selected point",
-      theSelected: "the selected point",
-      antipodeOf: (n) => `Antipode of ${n}`,
+      myLocation: "Where you are",
+      myLocationInline: "where you are",
+      pointName: "Point on the map",
+      theSelected: "your town",
+      antipodeOf: (n) => `Opposite side from ${n}`,
       mapCentre: "Map centre",
       through: "↕ 12,742 km straight through the Earth",
       viewEdge: "Whole map",
@@ -94,15 +97,17 @@
     ja: {
       kicker: "#30DayMapChallenge 2026 · Day 15 · Inside out",
       title: "あなたの町が、世界の果てになる",
+      lede: "あなたの町が地図の外側をぐるりと囲み、地球の裏側が真ん中に来ます。",
+      yourTown: "あなたの町",
       searchLabel: "町を検索",
-      searchPlaceholder: "町を検索（例：帯広、New York）",
-      useLocation: "現在地を使う",
+      searchPlaceholder: "あなたの町を変える：検索（例：札幌、New York）",
+      useLocation: "現在地にする",
       circles: "同じ大きさの円",
       share: "共有",
-      hint: "地図をクリックすると場所を選べます。ドラッグで中心を動かし、スクロールやピンチで拡大縮小します。",
+      hint: "地図をクリックすると、その地点があなたの町になります。ドラッグで移動、スクロールやピンチで拡大縮小。",
       details: "詳細",
-      selected: "選んだ場所（外周）",
-      centre: "地図の中心（地球の裏側）",
+      selected: "あなたの町（外周ぜんぶ）",
+      centre: "地図の中心（あなたの町の裏側）",
       stretchCaption: "各都市の伸び率（中心を1とする）",
       city: "都市",
       distance: "中心から",
@@ -126,8 +131,9 @@
       infinite: "∞",
       noResults: "該当する町がありません",
       myLocation: "現在地",
-      pointName: "選んだ地点",
-      theSelected: "選んだ地点",
+      myLocationInline: "現在地",
+      pointName: "地図上の地点",
+      theSelected: "あなたの町",
       antipodeOf: (n) => `${n}の裏側`,
       mapCentre: "地図の中心",
       through: "↕ 地球を貫いて一直線に 12,742 km",
@@ -246,6 +252,12 @@
     const left = wide ? 384 : 0;
     const availW = width - left;
     let top = 0, bottom = height;
+    if (width >= 760) {
+      const topBottom = document.querySelector(".top").getBoundingClientRect().bottom;
+      els.info.style.maxHeight = `${Math.max(160, height - topBottom - 24)}px`;
+    } else {
+      els.info.style.maxHeight = "";
+    }
     if (width < 760) {
       sizeGlobe();
       const infoH = els.info.classList.contains("collapsed") ? els.info.offsetHeight : 150;
@@ -455,8 +467,11 @@
     ctx.font = "600 11px system-ui, -apple-system, 'Segoe UI', 'Hiragino Sans', sans-serif";
     ctx.textBaseline = "middle"; ctx.textAlign = "start";
     const label = t("antipodeOf")(shortName());
-    haloText(label, cx + 9, cy - 9, COLORS.edge);
-    boxes.push([cx - 8, cy - 18, cx + 12 + ctx.measureText(label).width, cy + 8]);
+    const lw = ctx.measureText(label).width;
+    ctx.textAlign = "center";
+    haloText(label, cx, cy - 15, COLORS.edge);
+    ctx.textAlign = "start";
+    boxes.push([cx - lw / 2 - 4, cy - 24, cx + lw / 2 + 4, cy + 8]);
   }
 
   function drawMyLocation() {
@@ -477,7 +492,7 @@
 
   function shortName() {
     const s = state.sel;
-    if (s.source === "geo") return t("myLocation");
+    if (s.source === "geo") return t("myLocationInline");
     return (lang === "ja" ? s.ja : s.name) || t("theSelected");
   }
 
@@ -633,6 +648,7 @@
     const name = displayName(s);
     const country = s.source === "geo" ? "" : (s.country ? ` (${s.country})` : "");
     els.selName.textContent = name + country;
+    $("townName").textContent = name;
     els.selCoord.textContent = fmtCoord(s.lat, s.lon);
     els.ctrCoord.textContent = fmtCoord(centre[1], centre[0]);
     canvas.setAttribute("aria-label", STR[lang].mapLabel(name));
@@ -930,6 +946,7 @@
 
   function updateInfoLight() {
     els.selName.textContent = t("pointName");
+    $("townName").textContent = fmtCoord(state.sel.lat, state.sel.lon);
     els.selCoord.textContent = fmtCoord(state.sel.lat, state.sel.lon);
     els.ctrCoord.textContent = fmtCoord(state.centre[1], state.centre[0]);
   }
@@ -989,6 +1006,7 @@
 
   // ---------- language ----------
   function applyLang() {
+    setStatus("");
     document.documentElement.lang = lang;
     document.title = t("title");
     document.querySelectorAll("[data-i18n]").forEach((el) => { el.textContent = t(el.dataset.i18n); });
