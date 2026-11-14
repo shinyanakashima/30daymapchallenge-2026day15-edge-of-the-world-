@@ -964,8 +964,8 @@
 
   els.viewEdge.addEventListener("click", () => { clearTimeout(viewTimer); zoomTo(1, 900); });
   els.viewCentre.addEventListener("click", () => { clearTimeout(viewTimer); zoomTo(centreK(), 900); });
-  els.zoomIn.addEventListener("click", () => canvasSel.transition().duration(reduceMotion.matches ? 0 : 250).call(zoom.scaleBy, 2));
-  els.zoomOut.addEventListener("click", () => canvasSel.transition().duration(reduceMotion.matches ? 0 : 250).call(zoom.scaleBy, 0.5));
+  els.zoomIn.addEventListener("click", () => { clearTimeout(viewTimer); canvasSel.transition().duration(reduceMotion.matches ? 0 : 250).call(zoom.scaleBy, 2); });
+  els.zoomOut.addEventListener("click", () => { clearTimeout(viewTimer); canvasSel.transition().duration(reduceMotion.matches ? 0 : 250).call(zoom.scaleBy, 0.5); });
 
   // ---------- buttons ----------
   els.circles.addEventListener("click", () => {
