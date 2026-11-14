@@ -838,7 +838,7 @@
     .scaleExtent([0.2, 600])
     .clickDistance(5)
     .on("start", (e) => {
-      if (e.sourceEvent) hidePick();
+      if (e.sourceEvent) { hidePick(); stopPlay(); } // the viewer takes over: stop any turn in progress
       if (e.sourceEvent && e.sourceEvent.type !== "wheel") canvas.classList.add("dragging");
     })
     .on("zoom", (e) => {
@@ -961,14 +961,13 @@
   async function init() {
     const fromUrl = readUrl();
     if (fromUrl) state.sel = fromUrl;
-    setT(reduceMotion.matches ? 1 : 0);
+    setT(1); // open on the inside-out map; the turn plays only when Play is pressed
     window.addEventListener("resize", resize);
     resize();
     applyLang();
 
     world110 = toWorld(await d3.json("data/countries-110m.json"));
     render(false); updateCentreKind();
-    if (!reduceMotion.matches) playTimer = setTimeout(() => playTo(1, 4200), 1200);
 
     const [w50, pl, cl] = await Promise.all([
       d3.json("data/countries-50m.json"),

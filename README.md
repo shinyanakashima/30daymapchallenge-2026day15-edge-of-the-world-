@@ -7,9 +7,9 @@
 
 ![Bristol turned inside out: Great Britain wraps around the outer edge and the rest of the world sits in the middle](docs/screenshot.png)
 
-Pick your town. At first it sits in the middle of an ordinary-looking map. Move the slider (or press **Play**) and the map turns inside out: the centre travels to the other side of the Earth, your town is pushed outward and stretched until it wraps around the whole map as its outer edge, and the rest of the world is squeezed into the middle.
+Pick your town. With the slider at **Normal** it sits in the middle of an ordinary-looking map. Move the slider to **Inside out** (or press **Play**) and the map turns inside out: the centre travels to the other side of the Earth, your town is pushed outward and stretched until it wraps around the whole map as its outer edge, and the rest of the world is squeezed into the middle.
 
-The map opens with Bristol, UK (51.45°N, 2.58°W) and plays the turn once. When it is inside out, the centre is 51.45°S, 177.42°E in the Pacific Ocean south-east of New Zealand, and Great Britain, Ireland and the seas around them fill most of the disc.
+The map opens with Bristol, UK (51.45°N, 2.58°W), already inside out. When it is inside out, the centre is 51.45°S, 177.42°E in the Pacific Ocean south-east of New Zealand, and Great Britain, Ireland and the seas around them fill most of the disc.
 
 The page is in English and can be switched to Japanese (日本語).
 
@@ -18,7 +18,7 @@ The page is in English and can be switched to Japanese (日本語).
 - **Your town** is shown at the top of the panel. Change it by searching a town by its English name. Major cities, and towns in Japan, can also be found by their Japanese name (e.g. 帯広).
 - **Click** a point on the map to open a small bubble; **Make this your town** changes your town to that point. Clicking alone changes nothing.
 - **Use where I am** makes your current position (from the browser) your town. A blue marker for it stays on the map when you choose other towns, until the page is reloaded.
-- Choosing another town keeps the current slider position and zoom; the map just turns to the new town. When the page opens it shows the turn from an ordinary map to the inside-out map once. With reduced motion turned on in the device settings, it goes straight to the inside-out map.
+- The page opens on the inside-out map. Nothing moves on its own: the turn from an ordinary map plays only when you press **Play**, and touching the map stops it. Choosing another town keeps the current slider position and zoom; the map just turns to the new town.
 - **Normal ↔ Inside out** slider: turn the map by hand. **Play** runs the turn again.
 - **Drag** to move the map, **scroll / pinch** or **− / +** to zoom. Neither changes your town.
 - **Equal circles** shows circles that all have a 500 km radius on the ground, placed at increasing distance from the centre (the same idea as Tissot's indicatrix).
