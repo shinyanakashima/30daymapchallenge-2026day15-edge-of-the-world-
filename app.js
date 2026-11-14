@@ -57,7 +57,7 @@
       aboutH1: "What is wrong with this map",
       aboutP1: "This is a stereographic projection. It keeps angles correct, so small shapes look right, but sizes grow the farther you go from the centre.",
       aboutP2: "On a Mercator map, things get bigger the farther they are from the equator. On this map, things get bigger the farther they are from the centre.",
-      aboutP3: "The centre here is the antipode of the place you chose — the point on the exact opposite side of the Earth. The antipode of the centre would be stretched to infinite size, so the place you chose cannot be drawn as a point. It wraps around the whole map as its outer edge.",
+      aboutP3: "The centre here is the antipode of the place you chose — the point on the exact opposite side of the Earth. The antipode of the centre would be stretched to infinite size, so the place you chose cannot be drawn as a point. It wraps around the whole map as its outer edge. The area within 500 km of it (the red band) fills 89% of the map, and the rest of the world is squeezed into the middle.",
       notesH: "Notes",
       note1: "The map is cut at 178.5° from the centre. The small area within 1.5° (about 170 km) of the chosen place cannot be drawn; the outer circle stands for it.",
       note2: "Your location is used only inside your browser. It is not sent anywhere and not saved. It is added to a link only if you press Share and confirm.",
@@ -77,6 +77,7 @@
       viewEdge: "Whole map",
       viewCentre: "Around the centre",
       viewLabel: "View",
+      shareCaption: (n, m, e) => [`${m}% of this map is within 500 km of ${n}`, `That area is ${e}% of the Earth's surface.`],
       near: "near",
       geoUnsupported: "This browser cannot provide a location.",
       geoWaiting: "Getting your location…",
@@ -113,7 +114,7 @@
       aboutH1: "この地図のどこがおかしいか",
       aboutP1: "これはステレオ図法（平射図法）の世界地図です。角度が正しい図法なので小さな形は正しく見えますが、中心から離れるほど大きく描かれます。",
       aboutP2: "メルカトル図法では赤道から離れるほど大きくなります。この地図では、中心から離れるほど大きくなります。",
-      aboutP3: "地図の中心は、選んだ場所の地球の裏側です。中心の裏側の点は無限大に引き伸ばされるので、選んだ場所は点として描けません。そのため地図全体を囲む外周になります。",
+      aboutP3: "地図の中心は、選んだ場所の地球の裏側です。中心の裏側の点は無限大に引き伸ばされるので、選んだ場所は点として描けません。そのため地図全体を囲む外周になります。選んだ場所から500 km以内（赤い帯）が地図の89%を占め、残りの世界は中央に押し込まれます。",
       notesH: "注記",
       note1: "中心から178.5°より外側は切り取っています。選んだ場所から1.5°（約170 km）以内は描けないため、外周の円がその場所を表します。",
       note2: "位置情報はブラウザの中だけで使い、どこにも送信せず、保存もしません。「共有」を押して確認したときだけ、リンクに含めます。",
@@ -133,6 +134,7 @@
       viewEdge: "外周まで",
       viewCentre: "中心付近",
       viewLabel: "表示",
+      shareCaption: (n, m, e) => [`この地図の${m}%は、${n}から500 km以内`, `地球の表面では、わずか${e}%の範囲です`],
       near: "付近",
       geoUnsupported: "このブラウザでは位置情報を使えません。",
       geoWaiting: "現在地を取得しています…",
@@ -231,6 +233,7 @@
 
   // ---------- layout ----------
   function resize() {
+    hatchPattern = null;
     dpr = Math.min(window.devicePixelRatio || 1, 2);
     width = window.innerWidth;
     height = window.innerHeight;
@@ -310,6 +313,7 @@
     }
 
     const boxes = [];
+    drawShareBand();
     drawRings(boxes);
     drawCities(boxes);
     drawCentre(boxes);
@@ -318,7 +322,58 @@
     ctx.restore();
 
     drawEdge();
+    drawShareCaption();
     if (!globeTimer) drawGlobe();
+  }
+
+  // The band within SHARE_KM of the selected place. On this map it takes most of
+  // the disc, while on the globe it is a tiny patch.
+  const SHARE_KM = 500;
+  function shareNumbers() {
+    const half = (CLIP / 2) * Math.PI / 180;
+    const rel = Math.tan((Math.PI - SHARE_KM / EARTH_R) / 2) / Math.tan(half);
+    return { map: 1 - rel * rel, earth: (1 - Math.cos(SHARE_KM / EARTH_R)) / 2, rel };
+  }
+  function edgeRadius() { return baseScale * state.k * Math.tan(((CLIP / 2) * Math.PI) / 180); }
+
+  let hatchPattern = null;
+  function hatch() {
+    if (hatchPattern) return hatchPattern;
+    const c = document.createElement("canvas");
+    const n = Math.round(9 * dpr);
+    c.width = c.height = n;
+    const g = c.getContext("2d");
+    g.strokeStyle = "rgba(194, 65, 45, 0.38)"; g.lineWidth = 1.1 * dpr;
+    g.beginPath(); g.moveTo(-1, n + 1); g.lineTo(n + 1, -1); g.stroke();
+    hatchPattern = ctx.createPattern(c, "repeat");
+    hatchPattern.setTransform(new DOMMatrix([1 / dpr, 0, 0, 1 / dpr, 0, 0]));
+    return hatchPattern;
+  }
+
+  function drawShareBand() {
+    const rEdge = edgeRadius(), r = rEdge * shareNumbers().rel;
+    if (r > Math.hypot(width, height)) return;
+    ctx.beginPath();
+    ctx.arc(cx, cy, rEdge, 0, 2 * Math.PI);
+    ctx.arc(cx, cy, r, 0, 2 * Math.PI, true);
+    ctx.fillStyle = hatch(); ctx.fill();
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, 2 * Math.PI);
+    ctx.lineWidth = 1.5; ctx.strokeStyle = "rgba(194, 65, 45, 0.8)"; ctx.stroke();
+  }
+
+  function drawShareCaption() {
+    const rEdge = edgeRadius(), n = shareNumbers(), r = rEdge * n.rel;
+    const y = cy + (r + rEdge) / 2;
+    if (width < 760 || r > Math.hypot(width, height) || y > height - 10) return; // phones: shown in the panel
+    const fs = width < 760 ? 12 : 14;
+    const [l1, l2] = t("shareCaption")(shortName(), Math.round(n.map * 100), (n.earth * 100).toFixed(2));
+    ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.font = `700 ${fs}px system-ui, -apple-system, 'Segoe UI', 'Hiragino Sans', sans-serif`;
+    ctx.lineWidth = 4; ctx.strokeStyle = "rgba(250,248,243,0.92)";
+    ctx.strokeText(l1, cx, y - fs * 0.7); ctx.fillStyle = COLORS.edge; ctx.fillText(l1, cx, y - fs * 0.7);
+    ctx.font = `${fs - 1}px system-ui, -apple-system, 'Segoe UI', 'Hiragino Sans', sans-serif`;
+    ctx.strokeText(l2, cx, y + fs * 0.7); ctx.fillStyle = "#3a2a26"; ctx.fillText(l2, cx, y + fs * 0.7);
+    ctx.textAlign = "start";
   }
 
   // Circles at fixed ground distances from the selected place. Around the
@@ -337,6 +392,7 @@
     const name = shortName();
     let first = true;
     for (const km of RING_KM) {
+      if (km === SHARE_KM) continue;
       const c = Math.PI - km / EARTH_R; // angle from the centre
       if (c > (CLIP * Math.PI) / 180) continue;
       const r = R * Math.tan(c / 2);
@@ -606,6 +662,9 @@
       for (const v of cells) { const td = document.createElement("td"); td.textContent = v; tr.appendChild(td); }
       return tr;
     }));
+    const n = shareNumbers();
+    const [l1, l2] = t("shareCaption")(name, Math.round(n.map * 100), (n.earth * 100).toFixed(2));
+    $("shareNote").textContent = `${l1}. ${l2}`.replace("。.", "。").replace(/以内\. /, "以内。");
     updateCentreKind();
   }
 
@@ -642,11 +701,17 @@
     const target = antipode(sel.lon, sel.lat);
     if (animate && !reduceMotion.matches) {
       if (state.k > 1.05) zoomTo(1, 800);
-      animateTo(target, () => { viewTimer = setTimeout(() => zoomTo(centreK(), 1600), 450); });
+      // turn → zoom in to show where the centre is → back out to the whole, inside-out map
+      animateTo(target, () => {
+        viewTimer = setTimeout(() => {
+          zoomTo(centreK(), 1600);
+          viewTimer = setTimeout(() => zoomTo(1, 1800), 1600 + 2800);
+        }, 450);
+      });
     } else {
       stopAnim();
       state.centre = target;
-      zoomTo(centreK(), 0);
+      zoomTo(1, 0);
       render(false);
     }
     updateInfo();

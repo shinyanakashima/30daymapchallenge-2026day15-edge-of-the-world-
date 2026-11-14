@@ -17,7 +17,8 @@ The page is in English and can be switched to Japanese (日本語).
 
 - **Search** a town by its English name. Major cities, and towns in Japan, can also be found by their Japanese name (e.g. 帯広).
 - **Click** the map to choose that point. The centre turns smoothly to the new antipode (switched instantly when the device asks for reduced motion).
-- After a place is chosen, the map turns with the whole disc in view, so you can see the new edge, and then zooms in on the area around the centre. **Whole map / Around the centre** switch between the two views.
+- After a place is chosen, the map turns with the whole disc in view, zooms in on the area around the centre to show where it is, and then returns to the whole map. **Whole map / Around the centre** switch between the two views.
+- The red band is everything within 500 km of the selected place. It covers 89% of the map, but only 0.15% of the Earth's surface.
 - **Drag** to move the centre. **Scroll / pinch** to zoom.
 - Country names appear where the map is enlarged enough to fit them.
 - **Use my location** picks your current position from the browser and makes it the edge. A blue marker for it stays on the map when you choose other places, until the page is reloaded.
