@@ -48,9 +48,11 @@
       flipInside: "Inside out",
       flipLabel: "Turn the map inside out",
       play: "Play",
-      hint: "Drag to move, scroll or pinch to zoom. Click a point to make it your town. Play shows the turn again.",
       pickBtn: "Make this your town",
       close: "Close",
+      rulerNear: (n) => `${n}: 0 km`,
+      rulerFar: "Farthest: 20,000 km",
+      popNote: "You can also click a point on the map.",
       details: "Details",
       centreLabel: "Centre of the inside-out map",
       stretchCaption: "Stretch on the inside-out map (relative to the centre)",
@@ -103,9 +105,11 @@
       flipInside: "裏返し",
       flipLabel: "地図を裏返す",
       play: "再生",
-      hint: "ドラッグで移動、スクロールやピンチで拡大縮小。地点をクリックすると、そこをあなたの町にできます。「再生」で裏返す様子をもう一度見られます。",
       pickBtn: "ここをあなたの町にする",
       close: "閉じる",
+      rulerNear: (n) => `${n}：0 km`,
+      rulerFar: "いちばん遠い：20,000 km",
+      popNote: "地図上の地点をクリックしても選べます。",
       details: "詳細",
       centreLabel: "裏返した地図の中心",
       stretchCaption: "裏返した地図での伸び率（中心を1とする）",
@@ -157,7 +161,9 @@
     q: $("q"), results: $("results"), geo: $("geo"), circles: $("circles"),
     zoomIn: $("zoomIn"), zoomOut: $("zoomOut"), status: $("status"), flip: $("flip"), play: $("play"),
     selName: $("selName"), selCoord: $("selCoord"), ctrCoord: $("ctrCoord"), ctrKind: $("ctrKind"),
-    stretchBody: $("stretchBody"), circleLegend: $("circleLegend"), info: $("info"), infoToggle: $("infoToggle"),
+    stretchBody: $("stretchBody"), circleLegend: $("circleLegend"),
+    townBtn: $("townBtn"), townPop: $("townPop"), details: $("details"), about: $("about"),
+    detailsBtn: $("detailsBtn"), aboutBtn: $("aboutBtn"),
   };
 
   // ---------- state ----------
@@ -304,23 +310,17 @@
     canvas.style.width = width + "px";
     canvas.style.height = height + "px";
 
-    const wide = width >= 1000;
-    const left = wide ? 384 : 0;
-    const availW = width - left;
-    let top = 0, bottom = height;
-    if (width >= 760) {
-      const topBottom = document.querySelector(".top").getBoundingClientRect().bottom;
-      els.info.style.maxHeight = `${Math.max(160, height - topBottom - 24)}px`;
-    } else {
-      els.info.style.maxHeight = "";
-      const infoH = els.info.classList.contains("collapsed") ? els.info.offsetHeight : 120;
-      top = document.querySelector(".top").getBoundingClientRect().bottom + 4;
-      bottom = height - infoH - 12;
-      if (bottom - top < 200) { top = 0; bottom = height; }
-    }
+    // the map fills the space between the two bars (and beside an open drawer on wide screens)
+    const top = document.querySelector(".topbar").getBoundingClientRect().bottom;
+    const bottom = document.querySelector(".bottombar").getBoundingClientRect().top;
+    document.documentElement.style.setProperty("--top-h", `${top}px`);
+    document.documentElement.style.setProperty("--bottom-h", `${height - bottom}px`);
+    const drawerOpen = !els.details.hidden || !els.about.hidden;
+    const left = 0;
+    const availW = width - (drawerOpen && width >= 760 ? 380 : 0);
     cx = left + availW / 2;
     cy = (top + bottom) / 2;
-    const margin = width < 760 ? 22 : 34;
+    const margin = width < 760 ? 24 : 36;
     const radius = Math.max(60, Math.min(availW, bottom - top) / 2 - margin);
     baseScale = radius / Math.tan((CLIP / 2) * RAD); // d3 stereographic: r = scale · tan(c / 2)
     render();
@@ -434,9 +434,14 @@
     if (!insideOut()) return;
     const rEdge = edgeRadius(), n = shareNumbers(), r = rEdge * n.rel;
     const y = oy + (r + rEdge) / 2;
-    if (width < 760 || r > Math.hypot(width, height) || y > height - 10) return; // phones: shown in the panel
-    const fs = 14;
+    if (r > Math.hypot(width, height) || y > height - 10) return;
     const [l1, l2] = t("shareCaption")(shortName(), Math.round(n.map * 100), (n.earth * 100).toFixed(2));
+    let fs = 14; // shrink to fit the band on small screens
+    ctx.font = `700 ${fs}px system-ui, -apple-system, 'Segoe UI', 'Hiragino Sans', sans-serif`;
+    while (fs > 9 && ctx.measureText(l1).width > rEdge * 1.45) {
+      fs -= 1;
+      ctx.font = `700 ${fs}px system-ui, -apple-system, 'Segoe UI', 'Hiragino Sans', sans-serif`;
+    }
     ctx.textAlign = "center"; ctx.textBaseline = "middle";
     ctx.font = `700 ${fs}px system-ui, -apple-system, 'Segoe UI', 'Hiragino Sans', sans-serif`;
     ctx.lineWidth = 4; ctx.strokeStyle = "rgba(250,248,243,0.92)";
@@ -446,40 +451,67 @@
     ctx.textAlign = "start";
   }
 
-  // Circles at fixed ground distances from your town. When the map is inside out
-  // they are concentric circles around the centre.
-  const RING_KM = [100, 200, 1000, 2000, 5000, 10000, 15000];
+  // Circles at fixed ground distances from your town (concentric once the map is
+  // inside out), and a ruler from the centre to the edge that names them:
+  // the centre is the farthest point from your town, the edge is your town.
+  const RING_KM = [200, 1000, 2000, 5000, 10000];
+  const RULER_KM = [200, 500, 1000, 2000, 5000, 10000];
+  const RULER_ANGLE = -35 * RAD; // up and to the right of the centre
   function drawRings(boxes) {
     if (!insideOut()) return;
     const diag = Math.hypot(width, height);
     const R = scaleNow();
-    let last = Infinity;
+    const radiusFor = (km) => R * Math.tan((Math.PI - km / EARTH_R) / 2);
     ctx.save();
     ctx.setLineDash([4, 4]);
     ctx.lineWidth = 1;
-    ctx.font = "11px system-ui, -apple-system, 'Segoe UI', 'Hiragino Sans', sans-serif";
-    ctx.textBaseline = "bottom";
-    ctx.textAlign = "center";
-    const name = shortName();
-    let first = true;
+    ctx.strokeStyle = "rgba(35, 49, 58, 0.4)";
     for (const km of RING_KM) {
-      const c = Math.PI - km / EARTH_R; // angle from the centre
-      if (c > CLIP * RAD) continue;
-      const r = R * Math.tan(c / 2);
-      if (r > diag || r < 28 || last - r < 26) continue;
-      last = r;
-      ctx.strokeStyle = "rgba(35, 49, 58, 0.45)";
+      const r = radiusFor(km);
+      if (r > diag || r < 6) continue;
       ctx.beginPath(); ctx.arc(ox, oy, r, 0, 2 * Math.PI); ctx.stroke();
-      const d = `${km.toLocaleString("en-US")} km`;
-      const label = first ? (lang === "ja" ? `${name}から ${d}` : `${d} from ${name}`) : d;
-      first = false;
-      const y = oy + r - 2;
-      ctx.lineWidth = 3; ctx.strokeStyle = "rgba(202, 217, 222, 0.9)"; ctx.setLineDash([]);
-      ctx.strokeText(label, ox, y);
-      ctx.fillStyle = "rgba(35, 49, 58, 0.9)"; ctx.fillText(label, ox, y);
-      const lw = ctx.measureText(label).width / 2 + 4;
-      boxes.push([ox - lw, y - 15, ox + lw, y + 2]);
-      ctx.setLineDash([4, 4]); ctx.lineWidth = 1;
+    }
+    ctx.restore();
+
+    // ruler
+    const rEdge = edgeRadius();
+    const ux = Math.cos(RULER_ANGLE), uy = Math.sin(RULER_ANGLE);
+    const nx = -uy, ny = ux; // label side: below-right of the line
+    const at = (r) => [ox + ux * r, oy + uy * r];
+    const end = at(Math.min(rEdge, diag * 2));
+    ctx.save();
+    ctx.lineCap = "round";
+    ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(end[0], end[1]);
+    ctx.lineWidth = 5; ctx.strokeStyle = "rgba(250, 248, 243, 0.75)"; ctx.stroke();
+    ctx.lineWidth = 1.6; ctx.strokeStyle = COLORS.city; ctx.stroke();
+
+    const name = shortName();
+    const marks = [
+      { r: rEdge, text: t("rulerNear")(name), strong: true, at: "edge" },
+      { r: 0, text: t("rulerFar"), strong: true, at: "centre" },
+      ...RULER_KM.map((km) => ({ r: radiusFor(km), text: `${km.toLocaleString("en-US")} km` })),
+    ];
+    const placed = [];
+    for (const m of marks) {
+      if (m.r > diag * 2) continue;
+      const [x, y] = at(m.r);
+      // tick
+      ctx.beginPath(); ctx.moveTo(x - nx * 4, y - ny * 4); ctx.lineTo(x + nx * 4, y + ny * 4);
+      ctx.lineWidth = 1.6; ctx.strokeStyle = COLORS.city; ctx.stroke();
+      if (!m.strong && placed.some((r) => Math.abs(r - m.r) < 34)) continue;
+      if (x < -50 || y < -20 || x > width + 50 || y > height + 20) continue;
+      placed.push(m.r);
+      ctx.font = `${m.strong ? 700 : 600} 11px system-ui, -apple-system, 'Segoe UI', 'Hiragino Sans', sans-serif`;
+      ctx.textBaseline = "middle"; ctx.textAlign = "start";
+      let lx = x + nx * 9, ly = y + ny * 9;
+      const w = ctx.measureText(m.text).width;
+      // edge label: ends just inside the edge; centre label: to the lower left, away from the ruler
+      if (m.at === "edge") { lx = x - ux * 12 + nx * 10 - w; ly = y - uy * 12 + ny * 10; }
+      if (m.at === "centre") { lx = x - 10 - w; ly = y + 14; }
+      ctx.lineWidth = 3.5; ctx.strokeStyle = "rgba(250, 248, 243, 0.92)";
+      ctx.strokeText(m.text, lx, ly);
+      ctx.fillStyle = m.strong ? COLORS.edge : COLORS.city; ctx.fillText(m.text, lx, ly);
+      boxes.push([lx - 2, ly - 8, lx + w + 2, ly + 8]);
     }
     ctx.restore();
   }
@@ -812,9 +844,7 @@
     els.q.removeAttribute("aria-activedescendant");
   }
   function choose(p) {
-    closeResults();
-    els.q.value = "";
-    els.q.blur();
+    setTownPop(false);
     setStatus("");
     select({ lat: p[4], lon: p[5], name: p[0], ja: p[2], country: p[3], source: "search" });
   }
@@ -906,26 +936,40 @@
         const { latitude, longitude } = pos.coords;
         setStatus(t("geoUsed"));
         state.myLoc = [longitude, latitude];
+        setTownPop(false);
         select({ lat: latitude, lon: longitude, name: "", ja: "", country: "", source: "geo" });
       },
       (err) => setStatus(err.code === 1 ? t("geoDenied") : t("geoFailed")),
       { enableHighAccuracy: false, timeout: 15000, maximumAge: 300000 }
     );
   });
-  $("aboutBtn").addEventListener("click", () => {
-    const about = $("about");
-    about.open = !about.open;
-    if (about.open) about.querySelector("summary").focus();
-  });
-  els.infoToggle.addEventListener("click", () => {
-    const collapsed = els.info.classList.toggle("collapsed");
-    els.infoToggle.setAttribute("aria-expanded", String(!collapsed));
-    if (collapsed) resize();
-  });
-  if (window.innerWidth < 760) {
-    els.info.classList.add("collapsed");
-    els.infoToggle.setAttribute("aria-expanded", "false");
+  // drawers: one at a time; on wide screens the map makes room for them
+  function setDrawer(name) {
+    for (const [key, btn] of [["details", els.detailsBtn], ["about", els.aboutBtn]]) {
+      const open = key === name && els[key].hidden;
+      els[key].hidden = !open;
+      btn.setAttribute("aria-expanded", String(open));
+    }
+    resize();
   }
+  els.detailsBtn.addEventListener("click", () => setDrawer("details"));
+  els.aboutBtn.addEventListener("click", () => setDrawer("about"));
+  document.querySelectorAll("[data-close]").forEach((b) => b.addEventListener("click", () => setDrawer(null)));
+
+  // town popover
+  function setTownPop(open) {
+    els.townPop.hidden = !open;
+    els.townBtn.setAttribute("aria-expanded", String(open));
+    if (open) { hidePick(); els.q.focus(); }
+    else { els.q.value = ""; closeResults(); }
+  }
+  els.townBtn.addEventListener("click", () => setTownPop(els.townPop.hidden));
+  document.addEventListener("pointerdown", (e) => {
+    if (!els.townPop.hidden && !els.townPop.contains(e.target) && !els.townBtn.contains(e.target)) setTownPop(false);
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !els.townPop.hidden) { setTownPop(false); els.townBtn.focus(); }
+  });
 
   // ---------- language ----------
   function applyLang() {

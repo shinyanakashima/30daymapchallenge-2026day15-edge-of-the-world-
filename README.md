@@ -15,18 +15,21 @@ The page is in English and can be switched to Japanese (日本語).
 
 ## How to use
 
-- **Your town** is shown at the top of the panel. Change it by searching a town by its English name. Major cities, and towns in Japan, can also be found by their Japanese name (e.g. 帯広).
+The map fills the screen. The bar at the top shows your town; the bar at the bottom holds the controls.
+
+- **Your town** (top bar): press the town name to search for another town by its English name. Major cities, and towns in Japan, can also be found by their Japanese name (e.g. 帯広). **Use where I am** makes your current position (from the browser) your town; a blue marker for it stays on the map when you choose other towns, until the page is reloaded.
 - **Click** a point on the map to open a small bubble; **Make this your town** changes your town to that point. Clicking alone changes nothing.
-- **Use where I am** makes your current position (from the browser) your town. A blue marker for it stays on the map when you choose other towns, until the page is reloaded.
-- The page opens on the inside-out map. Nothing moves on its own: the turn from an ordinary map plays only when you press **Play**, and touching the map stops it. Choosing another town keeps the current slider position and zoom; the map just turns to the new town.
-- **Normal ↔ Inside out** slider: turn the map by hand. **Play** runs the turn again.
+- **Normal ↔ Inside out** slider (bottom bar): turn the map by hand. **Play** runs the turn from an ordinary map to the inside-out map. The page opens on the inside-out map, and nothing moves on its own; touching the map stops a turn in progress. Choosing another town keeps the slider position and zoom.
 - **Drag** to move the map, **scroll / pinch** or **− / +** to zoom. Neither changes your town.
 - **Equal circles** shows circles that all have a 500 km radius on the ground, placed at increasing distance from the centre (the same idea as Tissot's indicatrix).
+- **Details** opens the numbers: your town, the centre of the inside-out map and whether it is on land or sea, and how much a set of major cities is enlarged. **About this map** opens the explanation and notes.
 - The address bar holds your town as `?lat=&lon=&name=`, so the page can be bookmarked or linked. A town that came from your location is not written there.
-- The red hatched band is everything within 500 km of your town. On the inside-out map it covers 89% of the map, but only 0.15% of the Earth's surface.
-- Country names appear where the map is enlarged enough to fit them.
 
-The panel also shows the centre of the inside-out map and whether it is on land or sea, and how much a set of major cities is enlarged on the inside-out map.
+On the inside-out map:
+
+- The ruler runs from the centre to the edge and reads distance from your town: the centre is the farthest point (20,000 km), the edge is your town (0 km). The dashed circles are fixed distances from your town.
+- The red hatched band is everything within 500 km of your town. It covers 89% of the map, but only 0.15% of the Earth's surface.
+- Country names appear where the map is enlarged enough to fit them.
 
 ## The projection
 

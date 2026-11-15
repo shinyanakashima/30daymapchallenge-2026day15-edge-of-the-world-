@@ -14,87 +14,87 @@
 <body>
 <canvas id="map" aria-label="Stereographic world map" role="img"></canvas>
 
-<header class="panel top">
-  <div class="title-row">
-    <div>
-      <p class="kicker" data-i18n="kicker">#30DayMapChallenge 2026 · Day 15 · Inside out</p>
-      <h1 data-i18n="title">Your town, the edge of the world</h1>
-    </div>
-    <div class="lang" role="group" aria-label="Language">
-      <button type="button" data-lang="en" aria-pressed="true">EN</button>
-      <button type="button" data-lang="ja" aria-pressed="false">日本語</button>
-    </div>
+<header class="bar topbar">
+  <div class="brand">
+    <p class="kicker" data-i18n="kicker">#30DayMapChallenge 2026 · Day 15 · Inside out</p>
+    <h1 data-i18n="title">Your town, the edge of the world</h1>
   </div>
-
-  <p class="lede" data-i18n="lede">Slide to turn the map inside out. Your town ends up all the way around the outside of the world.</p>
-
   <div class="town">
     <span class="town-label" data-i18n="yourTown">Your town</span>
-    <strong id="townName">Bristol</strong>
+    <button type="button" id="townBtn" aria-expanded="false" aria-controls="townPop">
+      <span id="townName">Bristol</span><span class="caret" aria-hidden="true"></span>
+    </button>
+    <div class="townpop" id="townPop" hidden>
+      <label for="q" class="sr-only" data-i18n="searchLabel">Search for a town</label>
+      <input id="q" type="search" autocomplete="off" spellcheck="false"
+             role="combobox" aria-expanded="false" aria-controls="results" aria-autocomplete="list"
+             data-i18n-placeholder="searchPlaceholder" placeholder="Search a town (e.g. Obihiro, New York)">
+      <ul id="results" role="listbox" hidden></ul>
+      <button type="button" id="geo" data-i18n="useLocation">Use where I am</button>
+      <p class="pop-note" data-i18n="popNote">You can also click a point on the map.</p>
+    </div>
   </div>
-
-  <div class="search">
-    <label for="q" class="sr-only" data-i18n="searchLabel">Search for a town</label>
-    <input id="q" type="search" autocomplete="off" spellcheck="false"
-           role="combobox" aria-expanded="false" aria-controls="results" aria-autocomplete="list"
-           data-i18n-placeholder="searchPlaceholder" placeholder="Search a town (e.g. Obihiro, New York)">
-    <ul id="results" role="listbox" hidden></ul>
+  <div class="lang" role="group" aria-label="Language">
+    <button type="button" data-lang="en" aria-pressed="true">EN</button>
+    <button type="button" data-lang="ja" aria-pressed="false">日本語</button>
   </div>
+</header>
 
-  <div class="buttons">
-    <button type="button" id="geo" data-i18n="useLocation">Use my location</button>
+<p class="status" id="status" role="status" aria-live="polite"></p>
+
+<footer class="bar bottombar">
+  <div class="flip">
+    <span class="flip-end" data-i18n="flipNormal" aria-hidden="true">Normal</span>
+    <input type="range" id="flip" min="0" max="1000" step="1" value="1000" data-i18n-aria="flipLabel" aria-label="Turn the map inside out">
+    <span class="flip-end" data-i18n="flipInside" aria-hidden="true">Inside out</span>
+    <button type="button" id="play" data-i18n="play">Play</button>
+  </div>
+  <div class="tools">
     <button type="button" id="circles" aria-pressed="false" data-i18n="circles">Equal circles</button>
     <span class="zoom">
       <button type="button" id="zoomOut" aria-label="Zoom out">−</button>
       <button type="button" id="zoomIn" aria-label="Zoom in">+</button>
     </span>
+    <button type="button" id="detailsBtn" aria-expanded="false" aria-controls="details" data-i18n="details">Details</button>
+    <button type="button" id="aboutBtn" aria-expanded="false" aria-controls="about" data-i18n="about">About this map</button>
   </div>
-  <div class="flip">
-    <span class="flip-end" data-i18n="flipNormal" aria-hidden="true">Normal</span>
-    <input type="range" id="flip" min="0" max="1000" step="1" value="0" data-i18n-aria="flipLabel" aria-label="Turn inside out">
-    <span class="flip-end" data-i18n="flipInside" aria-hidden="true">Inside out</span>
-    <button type="button" id="play" data-i18n="play">Play</button>
-  </div>
-  <p class="hint" data-i18n="hint">Click the map to choose a place. Drag to move the centre. Scroll or pinch to zoom.</p>
-  <p class="status" id="status" role="status" aria-live="polite"></p>
-</header>
+</footer>
 
-<aside class="panel info" id="info">
+<aside class="drawer" id="details" hidden aria-labelledby="detailsTitle">
+  <div class="drawer-head">
+    <h2 id="detailsTitle" data-i18n="details">Details</h2>
+    <button type="button" class="drawer-close" data-close="details" data-i18n-aria="close" aria-label="Close">×</button>
+  </div>
+  <p class="share-note" id="shareNote"></p>
   <dl class="facts">
     <div><dt data-i18n="yourTown">Your town</dt><dd><strong id="selName">—</strong> <span id="selCoord" class="mono">—</span></dd></div>
     <div><dt data-i18n="centreLabel">Centre of the inside-out map</dt><dd><span id="ctrCoord" class="mono">—</span> <span id="ctrKind">—</span></dd></div>
   </dl>
-  <p class="share-note" id="shareNote"></p>
-  <div class="mobile-row">
-    <button type="button" class="info-toggle" id="infoToggle" aria-expanded="true" aria-controls="infoBody" data-i18n="details">Details</button>
-    <button type="button" id="aboutBtn" aria-controls="about" data-i18n="about">About this map</button>
-  </div>
-  <div id="infoBody">
-    <table class="stretch">
-      <caption data-i18n="stretchCaption">Stretch at each city (relative to the centre)</caption>
-      <thead><tr><th scope="col" data-i18n="city">City</th><th scope="col" data-i18n="distance">From centre</th><th scope="col" data-i18n="length">Length</th><th scope="col" data-i18n="area">Area</th></tr></thead>
-      <tbody id="stretchBody"></tbody>
-    </table>
-    <p class="formula" data-i18n-html="formula">Length ×&nbsp;2&nbsp;/&nbsp;(1&nbsp;+&nbsp;cos&nbsp;<i>c</i>), area × its square. <i>c</i> = angular distance from the centre.</p>
-    <p class="legend" id="circleLegend" hidden data-i18n="circleLegend">Every circle has the same 500&nbsp;km radius on the ground.</p>
-  </div>
+  <table class="stretch">
+    <caption data-i18n="stretchCaption">Stretch on the inside-out map (relative to the centre)</caption>
+    <thead><tr><th scope="col" data-i18n="city">City</th><th scope="col" data-i18n="distance">From centre</th><th scope="col" data-i18n="length">Length</th><th scope="col" data-i18n="area">Area</th></tr></thead>
+    <tbody id="stretchBody"></tbody>
+  </table>
+  <p class="formula" data-i18n-html="formula">Length ×&nbsp;2&nbsp;/&nbsp;(1&nbsp;+&nbsp;cos&nbsp;<i>c</i>), area × its square. <i>c</i> = angular distance from the centre.</p>
+  <p class="legend" id="circleLegend" hidden data-i18n="circleLegend">Every circle has the same 500&nbsp;km radius on the ground.</p>
 </aside>
 
-<details class="panel about" id="about">
-  <summary data-i18n="about">About this map</summary>
-  <div class="about-body">
-    <h2 data-i18n="aboutH1">What is wrong with this map</h2>
-    <p data-i18n="aboutP1">This is a stereographic projection. It keeps angles correct, so small shapes look right, but sizes grow the farther you go from the centre.</p>
-    <p data-i18n="aboutP2">On a Mercator map, things get bigger the farther they are from the equator. On this map, things get bigger the farther they are from the centre.</p>
-    <p data-i18n="aboutP3">The centre here is the antipode of the place you chose — the point on the exact opposite side of the Earth. The antipode of the centre would be stretched to infinite size, so the place you chose cannot be drawn as a point. It wraps around the whole map as its outer edge. The area within 500 km of it (the red band) fills 89% of the map, and the rest of the world is squeezed into the middle.</p>
-    <h2 data-i18n="notesH">Notes</h2>
-    <ul>
-      <li data-i18n="note1">The map is cut at 178.5° from the centre. The small area within 1.5° (about 170 km) of the chosen place cannot be drawn; the outer circle stands for it.</li>
-      <li data-i18n="note2">Your location is used only inside your browser. It is not sent anywhere and not saved. It is not written to the address bar.</li>
-      <li data-i18n-html="note3">Data: <a href="https://www.naturalearthdata.com/">Natural Earth</a> (public domain): Admin 0 countries 1:110m and 1:50m (via <a href="https://github.com/topojson/world-atlas">world-atlas</a>), Populated Places 1:10m.</li>
-    </ul>
+<aside class="drawer" id="about" hidden aria-labelledby="aboutTitle">
+  <div class="drawer-head">
+    <h2 id="aboutTitle" data-i18n="about">About this map</h2>
+    <button type="button" class="drawer-close" data-close="about" data-i18n-aria="close" aria-label="Close">×</button>
   </div>
-</details>
+  <h3 data-i18n="aboutH1">What is wrong with this map</h3>
+  <p data-i18n="aboutP1">This is a stereographic projection. It keeps angles correct, so small shapes look right, but sizes grow the farther you go from the centre.</p>
+  <p data-i18n="aboutP2">On a Mercator map, things get bigger the farther they are from the equator. On this map, things get bigger the farther they are from the centre.</p>
+  <p data-i18n="aboutP3"></p>
+  <h3 data-i18n="notesH">Notes</h3>
+  <ul>
+    <li data-i18n="note1"></li>
+    <li data-i18n="note2">Your location is used only inside your browser. It is not sent anywhere and not saved. It is not written to the address bar.</li>
+    <li data-i18n-html="note3">Data: <a href="https://www.naturalearthdata.com/">Natural Earth</a> (public domain).</li>
+  </ul>
+</aside>
 
 <div class="pick" id="pick" hidden role="dialog" aria-labelledby="pickWhere">
   <p id="pickWhere"></p>
